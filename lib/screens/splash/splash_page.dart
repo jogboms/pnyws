@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnyws/constants/mk_colors.dart';
+import 'package:pnyws/registry.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -7,20 +8,35 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  Future<Map<String, int>> _future;
+
   @override
   void initState() {
     super.initState();
-  }
 
-  @override
-  void dispose() {
-    super.dispose();
+    _future = Registry.di().repository.auth.getAccount();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(color: MkColors.primary),
+      body: FutureBuilder<Map<String, int>>(
+        future: _future,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) async {
+                Registry.di().sharedCoordinator.toHome();
+              },
+            );
+          }
+
+          return Container(
+            color: MkColors.primary,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        },
+      ),
     );
   }
 }

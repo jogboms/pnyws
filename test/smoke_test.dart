@@ -49,10 +49,15 @@ void main() {
       verify(mockObserver.didPush(any, any));
 
       expect(find.byType(SplashPage), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
       await tester.pump();
 
-      expect(find.byType(Scaffold), findsOneWidget);
+      completer.complete({"id": 1});
+
+      await tester.pump();
+
+      verify(mockObserver.didPush(any, any));
     });
   });
 }
