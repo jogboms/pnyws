@@ -5,13 +5,13 @@ import 'package:pnyws/app.dart';
 import 'package:pnyws/environments/environment.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/repositories/repository.dart';
+import 'package:pnyws/services/auth/auth.dart';
 import 'package:pnyws/services/session.dart';
 import 'package:pnyws/services/shared_prefs.dart';
 import 'package:pnyws/utils/mk_first_time_login_check.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main({
-  @required Repository repository,
   Environment environment = Environment.MOCK,
   int delay = 0,
 }) async {
@@ -23,6 +23,17 @@ void main({
 
   final navigatorKey = GlobalKey<NavigatorState>();
   final sharedPrefs = SharedPrefs(await SharedPreferences.getInstance());
+
+  Repository repository;
+  switch (environment) {
+    case Environment.DEVELOPMENT:
+    case Environment.PRODUCTION:
+      repository = Repository(auth: AuthImpl());
+      break;
+    case Environment.MOCK:
+    default:
+      repository = Repository(auth: AuthMockImpl());
+  }
 
   Registry().initialize(
     repository,
