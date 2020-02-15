@@ -77,6 +77,7 @@ class ThemeProvider extends InheritedWidget {
       accentColor: MkColors.secondary,
       primarySwatch: MkColors.primaryAccent,
       primaryColor: MkColors.primary,
+      scaffoldBackgroundColor: MkColors.primary,
       primaryIconTheme: theme.primaryIconTheme.copyWith(color: MkColors.primaryAccent),
       textTheme: theme.textTheme.copyWith(
         body1: theme.textTheme.body1.merge(body1),

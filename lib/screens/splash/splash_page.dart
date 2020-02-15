@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/registry.dart';
 
 class SplashPage extends StatefulWidget {
@@ -31,10 +30,7 @@ class _SplashPageState extends State<SplashPage> {
             );
           }
 
-          return Container(
-            color: MkColors.primary,
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return Center(child: CircularProgressIndicator());
         },
       ),
     );
