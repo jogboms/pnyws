@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:injector/injector.dart';
 import 'package:pnyws/coordinator/shared_coordinator.dart';
+import 'package:pnyws/repositories/repository.dart';
 import 'package:pnyws/services/session.dart';
 import 'package:pnyws/services/shared_prefs.dart';
 
@@ -8,6 +9,7 @@ class Registry {
   const Registry();
 
   void initialize(
+    Repository repository,
     Session session,
     GlobalKey<NavigatorState> navigatorKey,
     String version,
@@ -16,6 +18,7 @@ class Registry {
     assert(session != null && navigatorKey != null);
     Injector.appInstance
       ..registerSingleton<Registry>((_) => this)
+      ..registerSingleton<Repository>((_) => repository)
       ..registerSingleton<Session>((_) => session)
       ..registerSingleton<SharedPrefs>((_) => sharedPrefs)
       ..registerSingleton<_AppVersion>((_) => _AppVersion(version))
@@ -28,6 +31,8 @@ class Registry {
   }
 
   static Registry di() => Injector.appInstance.getDependency<Registry>();
+
+  Repository get repository => Injector.appInstance.getDependency<Repository>();
 
   Session get session => Injector.appInstance.getDependency<Session>();
 
