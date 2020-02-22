@@ -81,7 +81,8 @@ class RenderGraphBox extends RenderBox
     with
         ContainerRenderObjectMixin<GraphItemBar, GraphParentData>,
         RenderBoxContainerDefaultsMixin<GraphItemBar, GraphParentData> {
-  RenderGraphBox({@required List<Item> values, @required this.animation}) : _values = values {
+  RenderGraphBox({@required List<Item> values, @required this.animation}) {
+    _values = normalizeValues(values);
     addChildren(_values);
   }
 
@@ -92,12 +93,34 @@ class RenderGraphBox extends RenderBox
   List<Item> get values => _values;
 
   set values(List<Item> values) {
-    if (_values == values) {
+    final normalized = normalizeValues(values);
+    if (_values == normalized) {
       return;
     }
-    _values = values;
+    _values = normalized;
+    removeAll();
     addChildren(_values);
     markNeedsLayout();
+  }
+
+  List<Item> normalizeValues(List<Item> values) {
+    return groupReduceBy<Item>(
+      values,
+      (item) => item.createdAt.day.toString(),
+      (a, b) => Item(title: "", value: a.value + b.value, createdAt: b.createdAt),
+    );
+  }
+
+  List<T> groupReduceBy<T extends Item>(List<T> list, String Function(T) fn, T Function(T a, T b) reducer) {
+    return list
+        .fold<Map<String, List<T>>>(<String, List<T>>{}, (rv, T x) {
+          final key = fn(x);
+          (rv[key] = rv[key] ?? <T>[]).add(x);
+          return rv;
+        })
+        .map<String, T>((key, values) => MapEntry(key, values.reduce(reducer)))
+        .values
+        .toList();
   }
 
   void addChildren(List<Item> values) {
