@@ -229,7 +229,7 @@ class RenderGraphBox extends RenderBox
           rect.centerLeft,
           rect.centerRight,
           [MkColors.secondaryAccent, Colors.yellowAccent, Colors.purpleAccent, Colors.redAccent],
-          [0, .25, .5, 1],
+          [.25, .5, .75, 1],
         ),
     );
 
