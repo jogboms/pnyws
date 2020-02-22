@@ -1,0 +1,82 @@
+import 'package:flutter/material.dart';
+import 'package:pnyws/constants/mk_colors.dart';
+import 'package:pnyws/screens/home/graph_view.dart';
+import 'package:pnyws/widgets/scaled_box.dart';
+import 'package:pnyws/widgets/theme_provider.dart';
+
+const kHeroTag = "detailsHeroTag";
+
+class CreateItemModal extends StatefulWidget {
+  @override
+  _CreateItemModalState createState() => _CreateItemModalState();
+}
+
+class _CreateItemModalState extends State<CreateItemModal> {
+  TextEditingController titleTextController;
+  FocusNode moneyTextNode;
+  TextEditingController moneyTextController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    moneyTextNode = FocusNode();
+    titleTextController = TextEditingController();
+    moneyTextController = TextEditingController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Material(
+        color: MkColors.primaryAccent,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 48.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const ScaledBox.vertical(16),
+              TextField(
+                controller: titleTextController,
+                decoration: InputDecoration(hintText: "e.g Red Suya"),
+                textInputAction: TextInputAction.next,
+                onEditingComplete: () => FocusScope.of(context).requestFocus(moneyTextNode),
+                textAlign: TextAlign.center,
+              ),
+              const ScaledBox.vertical(8),
+              TextField(
+                focusNode: moneyTextNode,
+                controller: moneyTextController,
+                decoration: InputDecoration(hintText: "e.g 1000"),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                textAlign: TextAlign.center,
+              ),
+              const ScaledBox.vertical(8),
+              Hero(
+                tag: kHeroTag,
+                child: RawMaterialButton(
+                  constraints: BoxConstraints(minHeight: 0),
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+                  shape: StadiumBorder(),
+                  fillColor: MkColors.secondaryAccent,
+                  child: Text("DONE", style: ThemeProvider.of(context).button),
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                      Item(
+                        title: titleTextController.text,
+                        value: double.tryParse(moneyTextController.text),
+                        createdAt: DateTime.now(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const ScaledBox.vertical(16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -15,10 +15,27 @@ const kTrackHeight = 32.0;
 const kStrokeWidth = 4.0;
 
 class Item {
-  const Item({this.value, this.createdAt});
+  const Item({
+    @required this.title,
+    @required this.value,
+    @required this.createdAt,
+  });
 
+  final String title;
   final double value;
   final DateTime createdAt;
+
+  @override
+  int get hashCode => title.hashCode ^ value.hashCode ^ createdAt.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      other is Item && other.title == title && other.value == value && other.createdAt.compareTo(createdAt) == 0;
+
+  @override
+  String toString() {
+    return "{title: $title, value: $value, createdAt: $createdAt}";
+  }
 }
 
 class GraphView extends BoxScrollView {
@@ -100,7 +117,7 @@ class RenderGraphBox extends RenderBox
   @override
   void performLayout() {
     final maxHeight = constraints.maxHeight - kTrackHeight - kLabelHeight;
-    final maxValue = values.map((item) => item.value).reduce(math.max);
+    final maxValue = values.isEmpty ? 0 : values.map((item) => item.value).reduce(math.max);
 
     GraphItemBar child = firstChild;
     int childCount = 0;

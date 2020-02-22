@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_scale_aware/flutter_scale_aware.dart';
 import 'package:intl/intl.dart';
 import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
+import 'package:pnyws/screens/home/create_item_modal.dart';
 import 'package:pnyws/screens/home/graph_view.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
@@ -17,20 +16,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   AnimationController _controller;
-  List<Item> values;
+  List<Item> values = [];
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: Duration(seconds: 2))..forward();
-
-    values = List.generate(
-      100,
-      (index) => Item(
-        value: Random().nextDouble() * 350,
-        createdAt: DateTime.now().add(Duration(days: index * 10)),
-      ),
-    );
   }
 
   @override
@@ -45,8 +36,22 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        heroTag: kHeroTag,
         child: Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () async {
+          final value = await showGeneralDialog<Item>(
+            context: context,
+            transitionDuration: Duration(milliseconds: 350),
+            barrierLabel: "details",
+            barrierColor: MkColors.primaryAccent.withOpacity(.75),
+            barrierDismissible: true,
+            pageBuilder: (_a, _b, _c) => CreateItemModal(),
+          );
+
+          if (value != null) {
+            values = [...values, value];
+          }
+        },
       ),
       body: CustomScrollView(
         slivers: [
@@ -114,7 +119,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       children: [
                         Expanded(
                           child: Text(
-                            "Red Suya",
+                            item.title,
                             style: theme.body1.copyWith(letterSpacing: 0.125),
                           ),
                         ),
