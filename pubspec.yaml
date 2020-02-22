@@ -17,6 +17,7 @@ dependencies:
     git:
       url: https://github.com/jogboms/flutter_scale_aware.git
       ref: scale-y
+  animations: ^1.0.0+5
 
 dev_dependencies:
   flutter_test:
