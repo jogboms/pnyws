@@ -15,14 +15,22 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+  AnimationController _controller;
   List<double> values;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(vsync: this, duration: Duration(seconds: 2))..forward();
 
     values = List.generate(100, (_) => Random().nextDouble() * 350);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,7 +63,11 @@ class _HomePageState extends State<HomePage> {
                 const ScaledBox.vertical(32),
                 SizedBox(
                   height: context.scaleY(240),
-                  child: GraphView(key: PageStorageKey<Type>(runtimeType), values: values),
+                  child: GraphView(
+                    key: PageStorageKey<Type>(runtimeType),
+                    animation: _controller,
+                    values: values,
+                  ),
                 ),
                 const ScaledBox.vertical(24),
                 Text(

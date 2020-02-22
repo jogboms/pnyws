@@ -18,24 +18,31 @@ class GraphView extends BoxScrollView {
   const GraphView({
     Key key,
     @required this.values,
+    @required this.animation,
   }) : super(key: key, scrollDirection: Axis.horizontal);
 
   final List<double> values;
+  final Animation<double> animation;
 
   @override
   Widget buildChildLayout(BuildContext context) {
-    return SliverToBoxAdapter(child: GraphWidget(values: values));
+    return SliverToBoxAdapter(child: GraphWidget(animation: animation, values: values));
   }
 }
 
 class GraphWidget extends LeafRenderObjectWidget {
-  const GraphWidget({Key key, @required this.values}) : super(key: key);
+  const GraphWidget({
+    Key key,
+    @required this.values,
+    @required this.animation,
+  }) : super(key: key);
 
   final List<double> values;
+  final Animation<double> animation;
 
   @override
   RenderGraphBox createRenderObject(BuildContext context) {
-    return RenderGraphBox(values: values);
+    return RenderGraphBox(values: values, animation: animation);
   }
 
   @override
@@ -50,9 +57,11 @@ class RenderGraphBox extends RenderBox
     with
         ContainerRenderObjectMixin<GraphItemBar, GraphParentData>,
         RenderBoxContainerDefaultsMixin<GraphItemBar, GraphParentData> {
-  RenderGraphBox({@required List<double> values}) : _values = values {
+  RenderGraphBox({@required List<double> values, @required this.animation}) : _values = values {
     addChildren(_values);
   }
+
+  Animation<double> animation;
 
   List<double> _values;
 
@@ -108,6 +117,20 @@ class RenderGraphBox extends RenderBox
   }
 
   @override
+  void attach(PipelineOwner owner) {
+    super.attach(owner);
+
+    animation.addListener(markNeedsLayout);
+  }
+
+  @override
+  void detach() {
+    animation.removeListener(markNeedsLayout);
+
+    super.detach();
+  }
+
+  @override
   void paint(PaintingContext context, Offset offset) {
     GraphItemBar child = firstChild;
     Offset prevCenterTop;
@@ -154,7 +177,7 @@ class RenderGraphBox extends RenderBox
       path,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = kStrokeWidth
+        ..strokeWidth = kStrokeWidth * animation.value
         ..shader = ui.Gradient.linear(
           rect.centerLeft,
           rect.centerRight,
@@ -185,8 +208,8 @@ class RenderGraphBox extends RenderBox
         text: TextSpan(
           text: '$i',
           style: TextStyle(
-            color: MkColors.primaryAccent.shade800,
-            fontSize: 12,
+            color: MkColors.primaryAccent.shade500,
+            fontSize: 8,
             fontWeight: MkStyle.semibold,
             shadows: [ui.Shadow(blurRadius: 2, offset: const Offset(0, 1))],
           ),
