@@ -17,14 +17,20 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   AnimationController _controller;
-  List<double> values;
+  List<Item> values;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: Duration(seconds: 2))..forward();
 
-    values = List.generate(100, (_) => Random().nextDouble() * 350);
+    values = List.generate(
+      100,
+      (index) => Item(
+        value: Random().nextDouble() * 350,
+        createdAt: DateTime.now().add(Duration(days: index * 10)),
+      ),
+    );
   }
 
   @override
@@ -56,7 +62,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ),
                 const ScaledBox.vertical(12),
                 Text(
-                  "\$${values.fold<double>(0, (p, c) => p + c).toStringAsFixed(2)}",
+                  "\$${values.fold<double>(0, (p, c) => p + c.value).toStringAsFixed(2)}",
                   style: theme.headline.copyWith(letterSpacing: 1.5),
                   textAlign: TextAlign.center,
                 ),
@@ -98,7 +104,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (_, index) {
-                  final value = values[index];
+                  final item = values[index];
                   return Container(
                     padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                     margin: EdgeInsets.symmetric(vertical: .125),
@@ -113,7 +119,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           ),
                         ),
                         Text(
-                          "\$${value.toStringAsFixed(2)}",
+                          "\$${item.value.toStringAsFixed(2)}",
                           style: theme.subhead1Bold.copyWith(letterSpacing: 1.05),
                         ),
                       ],

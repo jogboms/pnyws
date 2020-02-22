@@ -14,6 +14,13 @@ const kLabelHeight = 32.0;
 const kTrackHeight = 32.0;
 const kStrokeWidth = 4.0;
 
+class Item {
+  const Item({this.value, this.createdAt});
+
+  final double value;
+  final DateTime createdAt;
+}
+
 class GraphView extends BoxScrollView {
   const GraphView({
     Key key,
@@ -21,7 +28,7 @@ class GraphView extends BoxScrollView {
     @required this.animation,
   }) : super(key: key, scrollDirection: Axis.horizontal);
 
-  final List<double> values;
+  final List<Item> values;
   final Animation<double> animation;
 
   @override
@@ -37,7 +44,7 @@ class GraphWidget extends LeafRenderObjectWidget {
     @required this.animation,
   }) : super(key: key);
 
-  final List<double> values;
+  final List<Item> values;
   final Animation<double> animation;
 
   @override
@@ -57,17 +64,17 @@ class RenderGraphBox extends RenderBox
     with
         ContainerRenderObjectMixin<GraphItemBar, GraphParentData>,
         RenderBoxContainerDefaultsMixin<GraphItemBar, GraphParentData> {
-  RenderGraphBox({@required List<double> values, @required this.animation}) : _values = values {
+  RenderGraphBox({@required List<Item> values, @required this.animation}) : _values = values {
     addChildren(_values);
   }
 
   Animation<double> animation;
 
-  List<double> _values;
+  List<Item> _values;
 
-  List<double> get values => _values;
+  List<Item> get values => _values;
 
-  set values(List<double> values) {
+  set values(List<Item> values) {
     if (_values == values) {
       return;
     }
@@ -76,8 +83,8 @@ class RenderGraphBox extends RenderBox
     markNeedsLayout();
   }
 
-  void addChildren(List<double> values) {
-    addAll(values.map((value) => GraphItemBar(value: value)).toList());
+  void addChildren(List<Item> values) {
+    addAll(values.map((item) => GraphItemBar(value: item.value)).toList());
   }
 
   @override
@@ -93,7 +100,7 @@ class RenderGraphBox extends RenderBox
   @override
   void performLayout() {
     final maxHeight = constraints.maxHeight - kTrackHeight - kLabelHeight;
-    final maxValue = values.reduce(math.max);
+    final maxValue = values.map((item) => item.value).reduce(math.max);
 
     GraphItemBar child = firstChild;
     int childCount = 0;
@@ -191,22 +198,23 @@ class RenderGraphBox extends RenderBox
 
       context.canvas.drawCircle(
         point,
-        kStrokeWidth * 2,
+        kStrokeWidth * 2 * animation.value,
         Paint()
           ..color = Colors.white38
           ..maskFilter = MaskFilter.blur(BlurStyle.normal, kStrokeWidth),
       );
-      context.canvas.drawCircle(point, kStrokeWidth / 1.6, Paint()..color = Colors.white);
+      context.canvas.drawCircle(point, kStrokeWidth * animation.value / 1.6, Paint()..color = Colors.white);
 
       const labelTextMargin = kStrokeWidth * 2;
       final labelTextRect = Offset(point.dx - kBarWidth / 2, constraints.maxHeight + labelTextMargin - kTrackHeight) &
           Size(kBarWidth, kTrackHeight - labelTextMargin);
+      final createdAt = values[i].createdAt;
       final textPainter = TextPainter(
         textDirection: TextDirection.ltr,
         textAlign: TextAlign.center,
         textWidthBasis: TextWidthBasis.longestLine,
         text: TextSpan(
-          text: '$i',
+          text: '${createdAt.day}.${createdAt.month + 1}.${createdAt.year.toString().substring(2)}',
           style: TextStyle(
             color: MkColors.primaryAccent.shade500,
             fontSize: 8,
@@ -225,7 +233,7 @@ class RenderGraphBox extends RenderBox
         textAlign: TextAlign.center,
         textWidthBasis: TextWidthBasis.longestLine,
         text: TextSpan(
-          text: '${values[i].toStringAsFixed(1)}',
+          text: '\$${values[i].value.toStringAsFixed(1)}',
           style: TextStyle(
             color: MkColors.primaryAccent.shade700,
             fontSize: 10,
