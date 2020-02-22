@@ -90,9 +90,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     children: <Widget>[
                       Text(
                         "${values.length} EXPENSES",
-                        style: theme.xxsmallSemi.copyWith(letterSpacing: 1.15),
+                        style: theme.xxsmallSemi.copyWith(color: kTextBaseColor.withOpacity(.5), letterSpacing: 1.15),
                       ),
-                      Icon(Icons.keyboard_arrow_down, color: kTextBaseColor),
+                      Icon(Icons.keyboard_arrow_down, color: kTextBaseColor.withOpacity(.5)),
                     ],
                   ),
                 ),
