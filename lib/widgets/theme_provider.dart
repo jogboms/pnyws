@@ -11,6 +11,7 @@ class ThemeProvider extends InheritedWidget {
 
   TextStyle get xxsmall => _text10Style;
   TextStyle get xxsmallHint => xxsmall.copyWith(color: Colors.grey);
+  TextStyle get xxsmallSemi => xxsmall.copyWith(fontWeight: MkStyle.semibold);
   TextStyle get xsmall => _text11Style;
   TextStyle get xsmallHint => xsmall.copyWith(color: Colors.grey);
   TextStyle get small => _text12Style;
@@ -33,7 +34,7 @@ class ThemeProvider extends InheritedWidget {
   TextStyle get subhead3 => _text16Style;
   TextStyle get subhead3Semi => _text16Style.copyWith(fontWeight: MkStyle.semibold);
   TextStyle get subhead3Light => _text16Style.copyWith(fontWeight: MkStyle.light);
-  TextStyle get headline => _text40Style;
+  TextStyle get headline => _text40Style.copyWith(fontWeight: MkStyle.bold);
 
   TextStyle get appBarTitle => subhead1Bold.copyWith(letterSpacing: .35);
 
