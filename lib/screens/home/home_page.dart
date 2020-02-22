@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_scale_aware/flutter_scale_aware.dart';
@@ -22,6 +24,15 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: Duration(seconds: 2))..forward();
+
+    values = List.generate(
+      10,
+      (index) => Item(
+        title: "Hello",
+        value: Random().nextDouble() * 350,
+        createdAt: DateTime.now().subtract(Duration(days: 120)).add(Duration(days: index * 10)),
+      ),
+    );
   }
 
   @override

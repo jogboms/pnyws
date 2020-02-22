@@ -254,7 +254,7 @@ class RenderGraphBox extends RenderBox
         textAlign: TextAlign.center,
         textWidthBasis: TextWidthBasis.longestLine,
         text: TextSpan(
-          text: '${createdAt.day}.${createdAt.month + 1}.${createdAt.year.toString().substring(2)}',
+          text: '${createdAt.day}.${createdAt.month}.${createdAt.year.toString().substring(2)}',
           style: TextStyle(
             color: MkColors.primaryAccent.shade500,
             fontSize: 8,
