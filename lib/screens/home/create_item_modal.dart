@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnyws/constants/mk_colors.dart';
+import 'package:pnyws/screens/home/date_form_field.dart';
 import 'package:pnyws/screens/home/graph_view.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
@@ -15,6 +16,7 @@ class _CreateItemModalState extends State<CreateItemModal> {
   TextEditingController titleTextController;
   FocusNode moneyTextNode;
   TextEditingController moneyTextController;
+  DateEditingController createAtTextController;
 
   @override
   void initState() {
@@ -23,6 +25,7 @@ class _CreateItemModalState extends State<CreateItemModal> {
     moneyTextNode = FocusNode();
     titleTextController = TextEditingController();
     moneyTextController = TextEditingController();
+    createAtTextController = DateEditingController(DateTime.now());
   }
 
   @override
@@ -52,6 +55,12 @@ class _CreateItemModalState extends State<CreateItemModal> {
                 textAlign: TextAlign.center,
               ),
               const ScaledBox.vertical(8),
+              DateFormField(
+                controller: createAtTextController,
+                decoration: InputDecoration(hintText: "Entry date"),
+                textAlign: TextAlign.center,
+              ),
+              const ScaledBox.vertical(8),
               Hero(
                 tag: kHeroTag,
                 child: RawMaterialButton(
@@ -66,7 +75,7 @@ class _CreateItemModalState extends State<CreateItemModal> {
                       Item(
                         title: titleTextController.text,
                         value: double.tryParse(moneyTextController.text),
-                        createdAt: DateTime.now(),
+                        createdAt: createAtTextController.value,
                       ),
                     );
                   },
