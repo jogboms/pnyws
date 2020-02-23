@@ -8,7 +8,7 @@ import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/registry.dart';
-import 'package:pnyws/screens/home/create_item_modal.dart';
+import 'package:pnyws/screens/home/create_expense_modal.dart';
 import 'package:pnyws/screens/home/expense_list_item.dart';
 import 'package:pnyws/screens/home/graph_view.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             barrierLabel: "details",
             barrierColor: MkColors.primaryAccent.withOpacity(.75),
             barrierDismissible: true,
-            pageBuilder: (_a, _b, _c) => CreateItemModal(),
+            pageBuilder: (_a, _b, _c) => CreateExpenseModal(),
           );
 
           if (value != null) {

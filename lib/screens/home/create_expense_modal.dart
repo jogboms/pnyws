@@ -7,12 +7,12 @@ import 'package:pnyws/widgets/theme_provider.dart';
 
 const kHeroTag = "detailsHeroTag";
 
-class CreateItemModal extends StatefulWidget {
+class CreateExpenseModal extends StatefulWidget {
   @override
-  _CreateItemModalState createState() => _CreateItemModalState();
+  _CreateExpenseModalState createState() => _CreateExpenseModalState();
 }
 
-class _CreateItemModalState extends State<CreateItemModal> {
+class _CreateExpenseModalState extends State<CreateExpenseModal> {
   TextEditingController titleTextController;
   FocusNode moneyTextNode;
   TextEditingController moneyTextController;
