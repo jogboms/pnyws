@@ -6,6 +6,7 @@ import 'package:flutter_scale_aware/flutter_scale_aware.dart';
 import 'package:intl/intl.dart';
 import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
+import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/home/create_item_modal.dart';
 import 'package:pnyws/screens/home/expense_list_item.dart';
@@ -20,7 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   AnimationController _controller;
-  List<Item> values = [];
+  List<ExpenseData> values = [];
 
   @override
   void initState() {
@@ -29,7 +30,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
     values = List.generate(
       10,
-      (index) => Item(
+      (index) => ExpenseData(
         title: "Hello",
         value: Random().nextDouble() * 350,
         createdAt: DateTime.now().subtract(Duration(days: 120)).add(Duration(days: index * 10)),
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         heroTag: kHeroTag,
         child: Icon(Icons.add),
         onPressed: () async {
-          final value = await showGeneralDialog<Item>(
+          final value = await showGeneralDialog<ExpenseData>(
             context: context,
             transitionDuration: Duration(milliseconds: 350),
             barrierLabel: "details",

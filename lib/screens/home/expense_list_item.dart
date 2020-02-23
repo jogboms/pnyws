@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
-import 'package:pnyws/screens/home/graph_view.dart';
+import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
@@ -11,7 +11,7 @@ class ExpenseListItem extends StatelessWidget {
     @required this.item,
   }) : super(key: key);
 
-  final Item item;
+  final ExpenseData item;
 
   @override
   Widget build(BuildContext context) {

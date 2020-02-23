@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
+import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/screens/home/interpolate.dart';
 
 const kBarWidth = 44.0;
@@ -14,30 +15,6 @@ const kLabelHeight = 32.0;
 const kTrackHeight = 32.0;
 const kStrokeWidth = 4.0;
 
-class Item {
-  const Item({
-    @required this.title,
-    @required this.value,
-    @required this.createdAt,
-  });
-
-  final String title;
-  final double value;
-  final DateTime createdAt;
-
-  @override
-  int get hashCode => title.hashCode ^ value.hashCode ^ createdAt.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      other is Item && other.title == title && other.value == value && other.createdAt.compareTo(createdAt) == 0;
-
-  @override
-  String toString() {
-    return "{title: $title, value: $value, createdAt: $createdAt}";
-  }
-}
-
 class GraphView extends BoxScrollView {
   const GraphView({
     Key key,
@@ -45,7 +22,7 @@ class GraphView extends BoxScrollView {
     @required this.animation,
   }) : super(key: key, scrollDirection: Axis.horizontal);
 
-  final List<Item> values;
+  final List<ExpenseData> values;
   final Animation<double> animation;
 
   @override
@@ -61,7 +38,7 @@ class GraphWidget extends LeafRenderObjectWidget {
     @required this.animation,
   }) : super(key: key);
 
-  final List<Item> values;
+  final List<ExpenseData> values;
   final Animation<double> animation;
 
   @override
@@ -81,18 +58,18 @@ class RenderGraphBox extends RenderBox
     with
         ContainerRenderObjectMixin<GraphItemBar, GraphParentData>,
         RenderBoxContainerDefaultsMixin<GraphItemBar, GraphParentData> {
-  RenderGraphBox({@required List<Item> values, @required this.animation}) {
+  RenderGraphBox({@required List<ExpenseData> values, @required this.animation}) {
     _values = normalizeValues(values);
     addChildren(_values);
   }
 
   Animation<double> animation;
 
-  List<Item> _values;
+  List<ExpenseData> _values;
 
-  List<Item> get values => _values;
+  List<ExpenseData> get values => _values;
 
-  set values(List<Item> values) {
+  set values(List<ExpenseData> values) {
     final normalized = normalizeValues(values);
     if (_values == normalized) {
       return;
@@ -103,15 +80,15 @@ class RenderGraphBox extends RenderBox
     markNeedsLayout();
   }
 
-  List<Item> normalizeValues(List<Item> values) {
-    return groupReduceBy<Item>(
+  List<ExpenseData> normalizeValues(List<ExpenseData> values) {
+    return groupReduceBy<ExpenseData>(
       values,
       (item) => item.createdAt.day.toString(),
-      (a, b) => Item(title: "", value: a.value + b.value, createdAt: b.createdAt),
+      (a, b) => ExpenseData(title: "", value: a.value + b.value, createdAt: b.createdAt),
     );
   }
 
-  List<T> groupReduceBy<T extends Item>(List<T> list, String Function(T) fn, T Function(T a, T b) reducer) {
+  List<T> groupReduceBy<T extends ExpenseData>(List<T> list, String Function(T) fn, T Function(T a, T b) reducer) {
     return list
         .fold<Map<String, List<T>>>(<String, List<T>>{}, (rv, T x) {
           final key = fn(x);
@@ -123,7 +100,7 @@ class RenderGraphBox extends RenderBox
         .toList();
   }
 
-  void addChildren(List<Item> values) {
+  void addChildren(List<ExpenseData> values) {
     addAll(values.map((item) => GraphItemBar(value: item.value)).toList());
   }
 
