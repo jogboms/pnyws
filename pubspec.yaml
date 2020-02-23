@@ -19,6 +19,7 @@ dependencies:
       ref: scale-y
   animations: ^1.0.0+5
   rxdart: ^0.23.1
+  uuid: ^2.0.4
 
 dev_dependencies:
   flutter_test:
