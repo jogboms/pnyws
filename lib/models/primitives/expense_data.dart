@@ -5,9 +5,10 @@ class ExpenseData {
   ExpenseData({
     String id,
     @required this.title,
-    @required this.value,
-    @required this.createdAt,
-  }) : id = id ?? Uuid().v4();
+    this.value = 0.0,
+    DateTime createdAt,
+  })  : id = id ?? Uuid().v4(),
+        createdAt = createdAt ?? DateTime.now();
 
   final String id;
   final String title;
@@ -24,6 +25,8 @@ class ExpenseData {
       other.title == title &&
       other.value == value &&
       other.createdAt.compareTo(createdAt) == 0;
+
+  bool get isValid => title != null && title.isNotEmpty && value > 0;
 
   @override
   String toString() {

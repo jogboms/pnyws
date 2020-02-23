@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
 import 'package:pnyws/widgets/form/date_form_field.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/secondary_button.dart';
+import 'package:pnyws/widgets/theme_provider.dart';
 
 const kHeroTag = "detailsHeroTag";
 
@@ -28,43 +28,44 @@ class _CreateTripModalState extends State<CreateTripModal> {
   Widget build(BuildContext context) {
     return Center(
       child: Material(
-        color: MkColors.primaryAccent,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 48.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const ScaledBox.vertical(16),
+              const ScaledBox.vertical(24),
               TextField(
                 controller: titleTextController,
                 decoration: InputDecoration(hintText: "e.g Lagos Get Away"),
                 textInputAction: TextInputAction.done,
+                autocorrect: true,
+                autofocus: true,
+                enableSuggestions: true,
+                textCapitalization: TextCapitalization.words,
                 textAlign: TextAlign.center,
+                style: ThemeProvider.of(context).textfield,
               ),
-              const ScaledBox.vertical(8),
+              const ScaledBox.vertical(16),
               DateFormField(
                 controller: createAtTextController,
                 decoration: InputDecoration(hintText: "Entry date"),
                 textAlign: TextAlign.center,
               ),
-              const ScaledBox.vertical(8),
+              const ScaledBox.vertical(16),
               Hero(
                 tag: kHeroTag,
                 child: SecondaryButton(
                   child: Text("DONE"),
                   onPressed: () {
-                    Navigator.pop(
-                      context,
-                      TripData(
-                        title: titleTextController.text,
-                        items: [],
-                        createdAt: createAtTextController.value,
-                      ),
-                    );
+                    final trip = TripData(title: titleTextController.text, createdAt: createAtTextController.value);
+
+                    if (trip.isValid) {
+                      Navigator.pop(context, trip);
+                    }
                   },
                 ),
               ),
-              const ScaledBox.vertical(16),
+              const ScaledBox.vertical(24),
             ],
           ),
         ),

@@ -5,6 +5,7 @@ import 'package:pnyws/models/primitives/trip_data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/dashboard/create_trip_modal.dart';
 import 'package:pnyws/screens/dashboard/trip_list_item.dart';
+import 'package:pnyws/widgets/theme_provider.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key key, this.selectedTrip}) : super(key: key);
@@ -51,7 +52,9 @@ class _DashboardPageState extends State<DashboardPage> {
         slivers: [
           SliverAppBar(
             floating: true,
-            title: const Text("Trips"),
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: Text("Trips", style: ThemeProvider.of(context).appBarTitle),
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.close, color: kTextBaseColor),

@@ -92,12 +92,25 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           }
 
           final trip = snapshot.data;
+          final createdAt = trip.createdAt;
 
           return CustomScrollView(
             slivers: [
               SliverAppBar(
                 floating: true,
-                title: Text(trip.title),
+                title: Column(
+                  children: <Widget>[
+                    Text(trip.title, style: theme.appBarTitle),
+                    Text(
+                      '${createdAt.day}.${createdAt.month}.${createdAt.year.toString().substring(2)}',
+                      style: theme.body3.copyWith(
+                        letterSpacing: 0.125,
+                        color: kTextBaseColor.withOpacity(.75),
+                      ),
+                    ),
+                  ],
+                ),
+                centerTitle: true,
                 actions: <Widget>[
                   IconButton(
                     icon: Icon(Icons.dashboard, color: kTextBaseColor),
@@ -108,7 +121,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    const ScaledBox.vertical(8),
+                    const ScaledBox.vertical(16),
                     Text(
                       "TOTAL AMOUNT",
                       style: theme.xxsmallSemi.copyWith(color: kTextBaseColor.withOpacity(.5)),
@@ -116,7 +129,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     ),
                     const ScaledBox.vertical(12),
                     Text(
-                      "\$${trip.items.fold<double>(0, (p, c) => p + c.value).toStringAsFixed(2)}",
+                      "₦${trip.items.fold<double>(0, (p, c) => p + c.value).round()}",
                       style: theme.headline.copyWith(letterSpacing: 1.5),
                       textAlign: TextAlign.center,
                     ),

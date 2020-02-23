@@ -6,9 +6,10 @@ class TripData {
   TripData({
     String id,
     @required this.title,
-    @required this.items,
-    @required this.createdAt,
-  }) : id = id ?? Uuid().v4();
+    this.items = const [],
+    DateTime createdAt,
+  })  : id = id ?? Uuid().v4(),
+        createdAt = createdAt ?? DateTime.now();
 
   final String id;
   final String title;
@@ -25,6 +26,8 @@ class TripData {
       other.title == title &&
       other.items == items &&
       other.createdAt.compareTo(createdAt) == 0;
+
+  bool get isValid => title != null && title.isNotEmpty;
 
   TripData copyWith({String title, List<ExpenseData> items}) {
     return TripData(

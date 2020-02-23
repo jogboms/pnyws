@@ -70,7 +70,7 @@ class TripListItem extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "\$${totalAmount.toStringAsFixed(2)}",
+                  "₦${totalAmount.round()}",
                   style: theme.subhead1Bold.copyWith(letterSpacing: 1.05),
                 ),
               ],

@@ -61,7 +61,7 @@ class ThemeProvider extends InheritedWidget {
 
   TextStyle get headline => _text40Style.copyWith(fontWeight: MkStyle.bold);
 
-  TextStyle get appBarTitle => subhead1Bold.copyWith(letterSpacing: .35);
+  TextStyle get appBarTitle => display2.copyWith(fontWeight: MkStyle.semibold, letterSpacing: .35);
 
   TextStyle get display1 => _text20Style;
 
@@ -125,16 +125,22 @@ class ThemeProvider extends InheritedWidget {
       accentColor: MkColors.secondary,
       primarySwatch: MkColors.primaryAccent,
       primaryColor: MkColors.primary,
+      primaryColorBrightness: Brightness.dark,
+      brightness: Brightness.dark,
+      backgroundColor: MkColors.primaryAccent,
+      canvasColor: MkColors.primaryAccent,
+      dialogBackgroundColor: MkColors.primaryAccent,
       scaffoldBackgroundColor: MkColors.primary,
-      primaryIconTheme: theme.primaryIconTheme.copyWith(color: MkColors.primaryAccent),
+      iconTheme: theme.iconTheme.copyWith(color: kTextBaseColor),
       textTheme: theme.textTheme.copyWith(
         body1: theme.textTheme.body1.merge(body1),
         button: theme.textTheme.button.merge(button),
+        subhead: theme.textTheme.button.merge(subhead1),
       ),
-      canvasColor: Colors.white,
       buttonTheme: theme.buttonTheme.copyWith(
         height: kButtonHeight,
         colorScheme: ColorScheme.fromSwatch(
+          brightness: Brightness.dark,
           primarySwatch: MkColors.primaryAccent,
           accentColor: MkColors.secondaryAccent,
         ),
@@ -163,7 +169,7 @@ class ThemeProvider extends InheritedWidget {
         labelStyle: textfieldLabel,
         errorStyle: errorStyle,
       ),
-      cursorColor: MkColors.primary,
+      cursorColor: MkColors.secondaryAccent,
       fontFamily: MkFonts.base,
       hintColor: kHintColor,
       dividerColor: kBorderSideColor,

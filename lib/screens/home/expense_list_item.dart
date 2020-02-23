@@ -51,7 +51,7 @@ class ExpenseListItem extends StatelessWidget {
               ),
             ),
             Text(
-              "\$${item.value.toStringAsFixed(2)}",
+              "₦${item.value.round()}",
               style: theme.subhead1Bold.copyWith(letterSpacing: 1.05),
             ),
           ],

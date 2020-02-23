@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/widgets/form/date_form_field.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/secondary_button.dart';
+import 'package:pnyws/widgets/theme_provider.dart';
 
 const kHeroTag = "detailsHeroTag";
 
@@ -32,52 +32,58 @@ class _CreateExpenseModalState extends State<CreateExpenseModal> {
   Widget build(BuildContext context) {
     return Center(
       child: Material(
-        color: MkColors.primaryAccent,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 48.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const ScaledBox.vertical(16),
+              const ScaledBox.vertical(24),
               TextField(
                 controller: titleTextController,
                 decoration: InputDecoration(hintText: "e.g Red Suya"),
+                autocorrect: true,
+                autofocus: true,
+                enableSuggestions: true,
+                textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
                 onEditingComplete: () => FocusScope.of(context).requestFocus(moneyTextNode),
                 textAlign: TextAlign.center,
+                style: ThemeProvider.of(context).textfield,
               ),
-              const ScaledBox.vertical(8),
+              const ScaledBox.vertical(16),
               TextField(
                 focusNode: moneyTextNode,
                 controller: moneyTextController,
                 decoration: InputDecoration(hintText: "e.g 1000"),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 textAlign: TextAlign.center,
+                style: ThemeProvider.of(context).textfield,
               ),
-              const ScaledBox.vertical(8),
+              const ScaledBox.vertical(16),
               DateFormField(
                 controller: createAtTextController,
                 decoration: InputDecoration(hintText: "Entry date"),
                 textAlign: TextAlign.center,
               ),
-              const ScaledBox.vertical(8),
+              const ScaledBox.vertical(16),
               Hero(
                 tag: kHeroTag,
                 child: SecondaryButton(
                   child: Text("DONE"),
                   onPressed: () {
-                    Navigator.pop(
-                      context,
-                      ExpenseData(
-                        title: titleTextController.text,
-                        value: double.tryParse(moneyTextController.text),
-                        createdAt: createAtTextController.value,
-                      ),
+                    final expense = ExpenseData(
+                      title: titleTextController.text,
+                      value: double.tryParse(moneyTextController.text) ?? 0.0,
+                      createdAt: createAtTextController.value,
                     );
+
+                    if (expense.isValid) {
+                      Navigator.pop(context, expense);
+                    }
                   },
                 ),
               ),
-              const ScaledBox.vertical(16),
+              const ScaledBox.vertical(24),
             ],
           ),
         ),

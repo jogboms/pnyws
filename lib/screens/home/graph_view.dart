@@ -250,7 +250,7 @@ class RenderGraphBox extends RenderBox
         textAlign: TextAlign.center,
         textWidthBasis: TextWidthBasis.longestLine,
         text: TextSpan(
-          text: '\$${values[i].value.toStringAsFixed(1)}',
+          text: '₦${values[i].value.round()}',
           style: TextStyle(
             color: MkColors.primaryAccent.shade700,
             fontSize: 10,
