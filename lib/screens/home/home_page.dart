@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 actions: <Widget>[
                   IconButton(
                     icon: Icon(Icons.dashboard, color: kTextBaseColor),
-                    onPressed: () => Registry.di().sharedCoordinator.toDashboard(),
+                    onPressed: () => Registry.di().sharedCoordinator.toDashboard(selectedTrip: trip),
                   ),
                 ],
               ),

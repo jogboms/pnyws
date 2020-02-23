@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pnyws/constants/mk_routes.dart';
 import 'package:pnyws/coordinator/coordinator_base.dart';
+import 'package:pnyws/models/primitives/trip_data.dart';
 import 'package:pnyws/screens/dashboard/dashboard_page.dart';
 import 'package:pnyws/screens/home/home_page.dart';
 import 'package:pnyws/screens/splash/splash_page.dart';
@@ -10,8 +11,8 @@ import 'package:pnyws/wrappers/mk_navigate.dart';
 class SharedCoordinator extends CoordinatorBase {
   const SharedCoordinator(GlobalKey<NavigatorState> navigatorKey) : super(navigatorKey);
 
-  void toDashboard() {
-    navigator?.push<void>(MkNavigate.fadeIn(DashboardPage(), fullscreenDialog: true));
+  void toDashboard({TripData selectedTrip}) {
+    navigator?.push<void>(MkNavigate.fadeIn(DashboardPage(selectedTrip: selectedTrip), fullscreenDialog: true));
   }
 
   void toHome() {

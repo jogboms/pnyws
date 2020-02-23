@@ -7,6 +7,10 @@ import 'package:pnyws/screens/dashboard/create_trip_modal.dart';
 import 'package:pnyws/screens/dashboard/trip_list_item.dart';
 
 class DashboardPage extends StatefulWidget {
+  const DashboardPage({Key key, this.selectedTrip}) : super(key: key);
+
+  final TripData selectedTrip;
+
   @override
   _DashboardPageState createState() => _DashboardPageState();
 }
@@ -76,7 +80,13 @@ class _DashboardPageState extends State<DashboardPage> {
                 padding: EdgeInsets.only(bottom: 84),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (_, index) => TripListItem(item: values[values.length - 1 - index]),
+                    (_, index) {
+                      final item = values[values.length - 1 - index];
+                      return TripListItem(
+                        item: values[values.length - 1 - index],
+                        isActive: widget.selectedTrip == item,
+                      );
+                    },
                     childCount: values.length,
                   ),
                 ),

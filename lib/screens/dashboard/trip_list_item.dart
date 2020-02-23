@@ -11,9 +11,11 @@ class TripListItem extends StatelessWidget {
   const TripListItem({
     Key key,
     @required this.item,
+    @required this.isActive,
   }) : super(key: key);
 
   final TripData item;
+  final bool isActive;
 
   @override
   Widget build(BuildContext context) {
@@ -25,18 +27,29 @@ class TripListItem extends StatelessWidget {
       actionPane: SlidableDrawerActionPane(),
       actionExtentRatio: 0.25,
       child: InkWell(
-        onTap: () {
-          Registry.di().repository.trip.setActiveTrip(item);
-          Navigator.pop(context);
-        },
+        onTap: isActive
+            ? null
+            : () {
+                Registry.di().repository.trip.setActiveTrip(item);
+                Navigator.pop(context);
+              },
         child: Ink(
           padding: EdgeInsets.symmetric(vertical: .125),
           decoration: BoxDecoration(color: MkColors.primaryAccent.shade500.withOpacity(.025)),
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            padding: EdgeInsets.fromLTRB(8, 16, 24, 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Container(
+                  margin: EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: isActive ? MkColors.secondaryAccent : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  width: 8,
+                  height: 8,
+                ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -66,12 +79,13 @@ class TripListItem extends StatelessWidget {
         ),
       ),
       secondaryActions: <Widget>[
-        IconSlideAction(
-          caption: 'Delete',
-          color: Colors.red,
-          icon: Icons.delete,
-          onTap: () => Registry.di().repository.trip.removeTrip(item),
-        ),
+        if (!isActive)
+          IconSlideAction(
+            caption: 'Delete',
+            color: Colors.red,
+            icon: Icons.delete,
+            onTap: () => Registry.di().repository.trip.removeTrip(item),
+          ),
       ],
     );
   }
