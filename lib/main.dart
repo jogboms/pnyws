@@ -33,7 +33,7 @@ void main({
       break;
     case Environment.MOCK:
     default:
-      repository = Repository(auth: AuthMockImpl(), trip: TripMockImpl());
+      repository = Repository(auth: AuthMockImpl(), trip: TripMockImpl(pref: sharedPrefs));
   }
 
   Registry().initialize(
