@@ -1,10 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
-import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
+import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/dashboard/create_trip_modal.dart';
 import 'package:pnyws/screens/dashboard/trip_list_item.dart';
 
@@ -14,27 +12,13 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  List<TripData> values = [];
+  Stream<List<TripData>> stream;
 
   @override
   void initState() {
     super.initState();
 
-    values = List.generate(
-      3,
-      (index) => TripData(
-        title: "Lagos $index",
-        items: List.generate(
-          Random().nextInt(20),
-          (index) => ExpenseData(
-            title: "Hello $index",
-            value: Random().nextDouble() * 350,
-            createdAt: DateTime.now().subtract(Duration(days: 120)).add(Duration(days: index * 10)),
-          ),
-        ),
-        createdAt: DateTime.now().subtract(Duration(days: 120)).add(Duration(days: index * 10)),
-      ),
-    );
+    stream = Registry.di().repository.trip.getAllTrips();
   }
 
   @override
@@ -54,9 +38,7 @@ class _DashboardPageState extends State<DashboardPage> {
           );
 
           if (value != null) {
-            setState(() {
-              values = [...values, value];
-            });
+            Registry.di().repository.trip.addNewTrip(value);
           }
         },
       ),
@@ -72,14 +54,33 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ],
           ),
-          SliverPadding(
-            padding: EdgeInsets.only(bottom: 84),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (_, index) => TripListItem(item: values[values.length - 1 - index]),
-                childCount: values.length,
-              ),
-            ),
+          StreamBuilder<List<TripData>>(
+            stream: stream,
+            builder: (context, AsyncSnapshot<List<TripData>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return SliverFillRemaining(
+                  child: Center(child: Text("Loading...")),
+                );
+              }
+
+              if (snapshot.hasData && (snapshot.data == null || snapshot.data.isEmpty)) {
+                return SliverFillRemaining(
+                  child: Center(child: Text("Empty List")),
+                );
+              }
+
+              final values = snapshot.data;
+
+              return SliverPadding(
+                padding: EdgeInsets.only(bottom: 84),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (_, index) => TripListItem(item: values[values.length - 1 - index]),
+                    childCount: values.length,
+                  ),
+                ),
+              );
+            },
           )
         ],
       ),
