@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
-import 'package:pnyws/screens/home/date_form_field.dart';
+import 'package:pnyws/widgets/form/date_form_field.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
-import 'package:pnyws/screens/home/fake_text_form_field.dart';
+import 'package:pnyws/widgets/form/fake_text_form_field.dart';
 
 class DateEditingController extends ValueNotifier<DateTime> {
   DateEditingController([DateTime value]) : super(value);
