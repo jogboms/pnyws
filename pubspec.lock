@@ -85,6 +85,13 @@ packages:
       url: "https://github.com/jogboms/flutter_scale_aware.git"
     source: git
     version: "0.0.1"
+  flutter_slidable:
+    dependency: "direct main"
+    description:
+      name: flutter_slidable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter

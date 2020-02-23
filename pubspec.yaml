@@ -20,6 +20,7 @@ dependencies:
   animations: ^1.0.0+5
   rxdart: ^0.23.1
   uuid: ^2.0.4
+  flutter_slidable: ^0.5.4
 
 dev_dependencies:
   flutter_test:
