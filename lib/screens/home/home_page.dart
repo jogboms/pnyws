@@ -6,6 +6,7 @@ import 'package:flutter_scale_aware/flutter_scale_aware.dart';
 import 'package:intl/intl.dart';
 import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
+import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/home/create_item_modal.dart';
 import 'package:pnyws/screens/home/expense_list_item.dart';
 import 'package:pnyws/screens/home/graph_view.dart';
@@ -67,7 +68,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       ),
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(),
+          SliverAppBar(
+            floating: true,
+            title: Text("Lagos"),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.dashboard, color: kTextBaseColor),
+                onPressed: () => Registry.di().sharedCoordinator.toDashboard(),
+              ),
+            ],
+          ),
           SliverList(
             delegate: SliverChildListDelegate(
               [
