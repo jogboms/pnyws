@@ -41,23 +41,31 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     final theme = ThemeProvider.of(context);
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        heroTag: kHeroTag,
-        child: Icon(Icons.add),
-        onPressed: () async {
-          final value = await showGeneralDialog<ExpenseData>(
-            context: context,
-            transitionDuration: Duration(milliseconds: 350),
-            barrierLabel: "details",
-            barrierColor: MkColors.primaryAccent.withOpacity(.75),
-            barrierDismissible: true,
-            pageBuilder: (_a, _b, _c) => CreateExpenseModal(),
-          );
-
-          if (value != null) {
-            // TODO
-//            values = [...values, value];
+      floatingActionButton: StreamBuilder<TripData>(
+        stream: stream,
+        builder: (context, AsyncSnapshot<TripData> snapshot) {
+          if (snapshot.data == null) {
+            return SizedBox();
           }
+
+          return FloatingActionButton(
+            heroTag: kHeroTag,
+            child: Icon(Icons.add),
+            onPressed: () async {
+              final value = await showGeneralDialog<ExpenseData>(
+                context: context,
+                transitionDuration: Duration(milliseconds: 350),
+                barrierLabel: "details",
+                barrierColor: MkColors.primaryAccent.withOpacity(.75),
+                barrierDismissible: true,
+                pageBuilder: (_a, _b, _c) => CreateExpenseModal(),
+              );
+
+              if (value != null) {
+                Registry.di().repository.trip.addExpenseToTrip(snapshot.data, value);
+              }
+            },
+          );
         },
       ),
       body: StreamBuilder<TripData>(
@@ -68,7 +76,19 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           }
 
           if (snapshot.data == null) {
-            return Center(child: Text("No Trips Yet"));
+            return Stack(
+              children: [
+                Center(child: Text("No Selected Trip")),
+                Positioned(
+                  right: 16,
+                  bottom: 16,
+                  child: FloatingActionButton(
+                    child: Icon(Icons.dashboard),
+                    onPressed: () => Registry.di().sharedCoordinator.toDashboard(),
+                  ),
+                ),
+              ],
+            );
           }
 
           final trip = snapshot.data;
@@ -138,7 +158,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 padding: EdgeInsets.only(bottom: 84),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (_, index) => ExpenseListItem(item: trip.items[trip.items.length - 1 - index]),
+                    (_, index) => ExpenseListItem(
+                      item: trip.items[trip.items.length - 1 - index],
+                      onDeleteAction: (expense) {
+                        Registry.di().repository.trip.removeExpenseFromTrip(trip, expense);
+                      },
+                    ),
                     childCount: trip.items.length,
                   ),
                 ),
