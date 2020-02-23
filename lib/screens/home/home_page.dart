@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
 import 'package:pnyws/screens/home/create_item_modal.dart';
+import 'package:pnyws/screens/home/expense_list_item.dart';
 import 'package:pnyws/screens/home/graph_view.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
@@ -119,29 +120,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             padding: EdgeInsets.only(bottom: 84),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
-                (_, index) {
-                  final item = values[index];
-                  return Container(
-                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                    margin: EdgeInsets.symmetric(vertical: .125),
-                    color: MkColors.primaryAccent.shade500.withOpacity(.025),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            item.title,
-                            style: theme.body1.copyWith(letterSpacing: 0.125),
-                          ),
-                        ),
-                        Text(
-                          "\$${item.value.toStringAsFixed(2)}",
-                          style: theme.subhead1Bold.copyWith(letterSpacing: 1.05),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                (_, index) => ExpenseListItem(item: values[values.length - 1 - index]),
                 childCount: values.length,
               ),
             ),
