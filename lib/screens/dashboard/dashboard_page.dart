@@ -39,6 +39,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
           if (value != null) {
             Registry.di().repository.trip.addNewTrip(value);
+            Navigator.pop(context);
           }
         },
       ),
@@ -46,7 +47,7 @@ class _DashboardPageState extends State<DashboardPage> {
         slivers: [
           SliverAppBar(
             floating: true,
-            title: Text("Trips"),
+            title: const Text("Trips"),
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.close, color: kTextBaseColor),
@@ -59,13 +60,13 @@ class _DashboardPageState extends State<DashboardPage> {
             builder: (context, AsyncSnapshot<List<TripData>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return SliverFillRemaining(
-                  child: Center(child: Text("Loading...")),
+                  child: Center(child: Text("Hang on...")),
                 );
               }
 
               if (snapshot.hasData && (snapshot.data == null || snapshot.data.isEmpty)) {
                 return SliverFillRemaining(
-                  child: Center(child: Text("Empty List")),
+                  child: Center(child: Text("Create a Trip.")),
                 );
               }
 

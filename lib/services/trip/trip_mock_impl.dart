@@ -12,21 +12,20 @@ const ACTIVE_ITEM_KEY = "ACTIVE_ITEM_KEY";
 
 class TripMockImpl implements TripRepository {
   TripMockImpl({@required this.pref}) {
-    final trips = List<TripData>.generate(
-      3,
-      (index) => TripData(
-        title: "Lagos $index",
+    final trips = [
+      TripData(
+        title: "Lagos Trip",
         items: List.generate(
-          Random().nextInt(20),
+          2,
           (index) => ExpenseData(
-            title: "Hello $index",
+            title: "${index + 2} Bottles of Coke",
             value: Random().nextDouble() * 350,
             createdAt: DateTime.now().subtract(Duration(days: 120)).add(Duration(days: index * 10)),
           ),
         ),
-        createdAt: DateTime.now().subtract(Duration(days: 120)).add(Duration(days: index * 10)),
+        createdAt: DateTime.now().subtract(Duration(days: 120)),
       ),
-    );
+    ];
     _tripsController.add(trips);
 
     final activeItemId = pref.getString(ACTIVE_ITEM_KEY);

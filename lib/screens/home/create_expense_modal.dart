@@ -3,7 +3,7 @@ import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/widgets/form/date_form_field.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
-import 'package:pnyws/widgets/theme_provider.dart';
+import 'package:pnyws/widgets/secondary_button.dart';
 
 const kHeroTag = "detailsHeroTag";
 
@@ -63,12 +63,8 @@ class _CreateExpenseModalState extends State<CreateExpenseModal> {
               const ScaledBox.vertical(8),
               Hero(
                 tag: kHeroTag,
-                child: RawMaterialButton(
-                  constraints: BoxConstraints(minHeight: 0),
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 18),
-                  shape: StadiumBorder(),
-                  fillColor: MkColors.secondaryAccent,
-                  child: Text("DONE", style: ThemeProvider.of(context).button),
+                child: SecondaryButton(
+                  child: Text("DONE"),
                   onPressed: () {
                     Navigator.pop(
                       context,

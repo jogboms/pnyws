@@ -8,8 +8,8 @@ import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/home/create_expense_modal.dart';
-import 'package:pnyws/screens/home/expense_list_item.dart';
 import 'package:pnyws/screens/home/graph_view.dart';
+import 'package:pnyws/screens/home/sliver_expense_list.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
@@ -72,13 +72,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         stream: stream,
         builder: (context, AsyncSnapshot<TripData> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: Text("Loading..."));
+            return Center(child: Text("Hang on..."));
           }
 
           if (snapshot.data == null) {
             return Stack(
               children: [
-                Center(child: Text("No Selected Trip")),
+                Center(child: Text("Select a Trip.")),
                 Positioned(
                   right: 16,
                   bottom: 16,
@@ -120,15 +120,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       style: theme.headline.copyWith(letterSpacing: 1.5),
                       textAlign: TextAlign.center,
                     ),
-                    const ScaledBox.vertical(32),
-                    SizedBox(
-                      height: context.scaleY(240),
-                      child: GraphView(
-                        key: PageStorageKey<Type>(runtimeType),
-                        animation: _controller,
-                        values: trip.items,
+                    if (trip.items.isNotEmpty) ...[
+                      const ScaledBox.vertical(32),
+                      SizedBox(
+                        height: context.scaleY(240),
+                        child: GraphView(
+                          key: PageStorageKey<Type>(runtimeType),
+                          animation: _controller,
+                          values: trip.items,
+                        ),
                       ),
-                    ),
+                    ],
                     const ScaledBox.vertical(24),
                     Text(
                       "${DateFormat.yMMMMEEEEd().format(DateTime.now())}",
@@ -156,17 +158,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ),
               SliverPadding(
                 padding: EdgeInsets.only(bottom: 84),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (_, index) => ExpenseListItem(
-                      item: trip.items[trip.items.length - 1 - index],
-                      onDeleteAction: (expense) {
-                        Registry.di().repository.trip.removeExpenseFromTrip(trip, expense);
-                      },
-                    ),
-                    childCount: trip.items.length,
-                  ),
-                ),
+                sliver: SliverExpenseList(trip: trip),
               )
             ],
           );
