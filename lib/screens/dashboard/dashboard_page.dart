@@ -21,7 +21,7 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
 
     values = List.generate(
-      20,
+      3,
       (index) => TripData(
         title: "Lagos $index",
         items: List.generate(
@@ -54,7 +54,9 @@ class _DashboardPageState extends State<DashboardPage> {
           );
 
           if (value != null) {
-            values = [...values, value];
+            setState(() {
+              values = [...values, value];
+            });
           }
         },
       ),
