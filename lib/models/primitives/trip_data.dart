@@ -26,6 +26,15 @@ class TripData {
       other.items == items &&
       other.createdAt.compareTo(createdAt) == 0;
 
+  TripData copyWith({String title, List<ExpenseData> items}) {
+    return TripData(
+      id: id,
+      createdAt: createdAt,
+      title: title ?? this.title,
+      items: items ?? this.items,
+    );
+  }
+
   @override
   String toString() {
     return "{id: $id, title: $title, items: $items, createdAt: $createdAt}";

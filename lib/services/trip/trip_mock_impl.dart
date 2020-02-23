@@ -45,12 +45,41 @@ class TripMockImpl implements TripRepository {
 
   @override
   void setActiveTrip(TripData trip) {
-    pref.setString(ACTIVE_ITEM_KEY, trip.id);
+    if (trip == null) {
+      pref.remove(ACTIVE_ITEM_KEY);
+    } else {
+      pref.setString(ACTIVE_ITEM_KEY, trip.id);
+    }
     _activeTripController.add(trip);
   }
 
   @override
   void addNewTrip(TripData trip) {
     _tripsController.add([..._tripsController.value, trip]);
+    setActiveTrip(trip);
+  }
+
+  @override
+  void addExpenseToTrip(TripData trip, ExpenseData expense) {
+    final newTrip = trip.copyWith(items: [...trip.items, expense]);
+    _tripsController.add(modifyTripFromList(_tripsController.value, newTrip));
+    _activeTripController.add(newTrip);
+  }
+
+  @override
+  void removeExpenseFromTrip(TripData trip, ExpenseData expense) {
+    final newTrip = trip.copyWith(
+      items: trip.items.where((_expense) => _expense.id != expense.id).toList(),
+    );
+    _tripsController.add(modifyTripFromList(_tripsController.value, newTrip));
+    _activeTripController.add(newTrip);
+  }
+
+  @override
+  void removeTrip(TripData trip) {
+    _tripsController.add(removeTripFromList(_tripsController.value, trip));
+    if (_activeTripController.value == trip) {
+      setActiveTrip(null);
+    }
   }
 }
