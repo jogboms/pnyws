@@ -8,6 +8,7 @@ import 'package:pnyws/repositories/repository.dart';
 import 'package:pnyws/services/auth/auth.dart';
 import 'package:pnyws/services/session.dart';
 import 'package:pnyws/services/shared_prefs.dart';
+import 'package:pnyws/services/trip/trip.dart';
 import 'package:pnyws/utils/mk_first_time_login_check.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,11 +29,11 @@ void main({
   switch (environment) {
     case Environment.DEVELOPMENT:
     case Environment.PRODUCTION:
-      repository = Repository(auth: AuthImpl());
+      repository = Repository(auth: AuthImpl(), trip: TripImpl());
       break;
     case Environment.MOCK:
     default:
-      repository = Repository(auth: AuthMockImpl());
+      repository = Repository(auth: AuthMockImpl(), trip: TripMockImpl());
   }
 
   Registry().initialize(
