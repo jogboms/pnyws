@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get_version/get_version.dart';
 import 'package:pnyws/app.dart';
 import 'package:pnyws/environments/environment.dart';
+import 'package:pnyws/firebase/firebase.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/repositories/repository.dart';
 import 'package:pnyws/services/auth/auth.dart';
@@ -29,11 +30,20 @@ void main({
   switch (environment) {
     case Environment.DEVELOPMENT:
     case Environment.PRODUCTION:
-      repository = Repository(auth: AuthImpl(), trip: TripImpl());
-      break;
+      {
+        final firebase = Firebase();
+        repository = Repository(
+          auth: AuthImpl(firebase: firebase),
+          trip: TripImpl(firebase: firebase),
+        );
+        break;
+      }
     case Environment.MOCK:
     default:
-      repository = Repository(auth: AuthMockImpl(), trip: TripMockImpl(pref: sharedPrefs));
+      repository = Repository(
+        auth: AuthMockImpl(),
+        trip: TripMockImpl(pref: sharedPrefs),
+      );
   }
 
   Registry().initialize(

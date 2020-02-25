@@ -1,8 +1,14 @@
+import 'package:flutter/foundation.dart';
+import 'package:pnyws/firebase/firebase.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
 import 'package:pnyws/repositories/trip_repository.dart';
 
 class TripImpl implements TripRepository {
+  TripImpl({@required this.firebase});
+
+  final Firebase firebase;
+
   @override
   Stream<TripData> getActiveTrip() {
     throw UnimplementedError();
