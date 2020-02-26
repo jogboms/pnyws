@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pnyws/firebase/data_reference.dart';
 
 class FireSnapshot {
   FireSnapshot(DocumentSnapshot doc)
@@ -19,16 +20,34 @@ class FireUser {
   String get uuid => _reference?.uid;
 }
 
-class FireReference {
+class FireReference implements DataReference<DocumentReference> {
   FireReference(this._reference);
 
   final DocumentReference _reference;
 
+  @override
   DocumentReference get source => _reference;
 
+  @override
   Future<void> delete() => _reference.delete();
 
+  @override
   Future<void> setData(Map<String, dynamic> data, {bool merge = false}) => _reference.setData(data, merge: merge);
 
+  @override
   Future<void> updateData(Map<String, dynamic> data) => _reference.updateData(data);
+}
+
+class MockDataReference implements DataReference<dynamic> {
+  @override
+  Future<void> delete() async {}
+
+  @override
+  Future<void> setData(Map<String, dynamic> data, {bool merge = false}) async {}
+
+  @override
+  dynamic get source => false;
+
+  @override
+  Future<void> updateData(Map<String, dynamic> data) async {}
 }

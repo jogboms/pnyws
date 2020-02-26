@@ -8,6 +8,7 @@ import 'package:pnyws/environments/environment.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/repositories/auth_repository.dart';
 import 'package:pnyws/repositories/repository.dart';
+import 'package:pnyws/repositories/trip_repository.dart';
 import 'package:pnyws/screens/splash/splash_page.dart';
 import 'package:pnyws/services/session.dart';
 import 'package:pnyws/services/shared_prefs.dart';
@@ -18,6 +19,8 @@ class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockTripRepository extends Mock implements TripRepository {}
 
 void main() {
   group("Smoke test", () {
@@ -31,13 +34,15 @@ void main() {
       final completer = Completer<Map<String, int>>();
 
       final authRepository = MockAuthRepository();
-      when(authRepository.getAccount()).thenAnswer((_) => completer.future);
+      when(authRepository.getAccount("1")).thenAnswer((_) async* {
+        await completer.future;
+      });
 
       const registry = Registry();
       final session = Session(environment: Environment.MOCK);
       final navigatorKey = GlobalKey<NavigatorState>();
       final sharedPrefs = SharedPrefs(MockSharedPreferences());
-      final repository = Repository(auth: authRepository);
+      final repository = Repository(auth: authRepository, trip: MockTripRepository());
       registry.initialize(repository, session, navigatorKey, "1.0.0", sharedPrefs);
 
       await tester.pumpWidget(App(

@@ -34,7 +34,7 @@ class Auth {
       );
       final user = await _auth.signInWithCredential(credential);
       assert(user != null);
-      assert(!user.isAnonymous);
+//      assert(!user.isAnonymous);
     } on PlatformException catch (e) {
       if (e.code == GoogleSignIn.kSignInCanceledError) {
         return;
