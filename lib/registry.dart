@@ -4,6 +4,7 @@ import 'package:pnyws/coordinator/shared_coordinator.dart';
 import 'package:pnyws/repositories/repository.dart';
 import 'package:pnyws/services/session.dart';
 import 'package:pnyws/services/shared_prefs.dart';
+import 'package:pnyws/state/state_machine.dart';
 
 class Registry {
   const Registry();
@@ -14,6 +15,7 @@ class Registry {
     GlobalKey<NavigatorState> navigatorKey,
     String version,
     SharedPrefs sharedPrefs,
+    StateMachine stateMachine,
   ) {
     assert(session != null && navigatorKey != null);
     Injector.appInstance
@@ -21,6 +23,7 @@ class Registry {
       ..registerSingleton<Repository>((_) => repository)
       ..registerSingleton<Session>((_) => session)
       ..registerSingleton<SharedPrefs>((_) => sharedPrefs)
+      ..registerSingleton<StateMachine>((_) => stateMachine)
       ..registerSingleton<_AppVersion>((_) => _AppVersion(version))
       ..registerSingleton<SharedCoordinator>((_) => SharedCoordinator(navigatorKey));
   }
@@ -39,6 +42,8 @@ class Registry {
   String get version => Injector.appInstance.getDependency<_AppVersion>().version;
 
   SharedPrefs get sharedPref => Injector.appInstance.getDependency<SharedPrefs>();
+
+  StateMachine get stateMachine => Injector.appInstance.getDependency<StateMachine>();
 
   SharedCoordinator get sharedCoordinator => Injector.appInstance.getDependency<SharedCoordinator>();
 }

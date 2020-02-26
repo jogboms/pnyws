@@ -10,6 +10,7 @@ import 'package:pnyws/services/auth/auth.dart';
 import 'package:pnyws/services/session.dart';
 import 'package:pnyws/services/shared_prefs.dart';
 import 'package:pnyws/services/trip/trip.dart';
+import 'package:pnyws/state/state_machine.dart';
 import 'package:pnyws/utils/mk_first_time_login_check.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,6 +26,7 @@ void main({
 
   final navigatorKey = GlobalKey<NavigatorState>();
   final sharedPrefs = SharedPrefs(await SharedPreferences.getInstance());
+  final stateMachine = StateMachine();
 
   Repository repository;
   switch (environment) {
@@ -34,7 +36,7 @@ void main({
         final firebase = Firebase();
         repository = Repository(
           auth: AuthImpl(firebase: firebase),
-          trip: TripImpl(firebase: firebase),
+          trip: TripImpl(firebase: firebase, stateMachine: stateMachine),
         );
         break;
       }
@@ -52,6 +54,7 @@ void main({
     navigatorKey,
     await GetVersion.projectVersion,
     sharedPrefs,
+    stateMachine,
   );
 
   runApp(App(
