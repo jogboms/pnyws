@@ -36,7 +36,7 @@ void main({
         final firebase = Firebase();
         repository = Repository(
           auth: AuthImpl(firebase: firebase),
-          trip: TripImpl(firebase: firebase, stateMachine: stateMachine),
+          trip: TripImpl(firebase: firebase, pref: sharedPrefs, stateMachine: stateMachine),
         );
         break;
       }
