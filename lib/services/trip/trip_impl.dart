@@ -4,11 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pnyws/firebase/firebase.dart';
 import 'package:pnyws/firebase/models.dart';
+import 'package:pnyws/models/account.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
 import 'package:pnyws/repositories/trip_repository.dart';
 import 'package:pnyws/services/shared_prefs.dart';
-import 'package:pnyws/state/app_state.dart';
 import 'package:pnyws/state/state_machine.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -20,24 +20,34 @@ DateTime parseDateTime(String serialized) {
   }
 }
 
+extension ListX<E> on List<E> {
+  List<E> tryWhere(bool test(E element)) {
+    try {
+      return where(test).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+}
+
 class TripImpl extends TripRepository {
   TripImpl({
     @required this.firebase,
     @required this.stateMachine,
     @required SharedPrefs pref,
   }) : super(pref: pref) {
-    stateMachine.stream.where((state) => state.account != null).switchMap((state) {
-      final activeItemId = retrievePersistedUuid();
+    account.switchMap((_account) {
       return CombineLatestStream.combine2<QuerySnapshot, QuerySnapshot, void>(
-        firebase.db.trips(state.account.uuid).snapshots(),
-        firebase.db.expenses(state.account.uuid).snapshots(),
-        (_tripsSnapshot, _expensesSnapshot) {
+        firebase.db.trips(_account.uuid).snapshots(),
+        firebase.db.expenses(_account.uuid).snapshots(),
+        (_tripsSnapshot, _expensesSnapshot) async {
           final expenses = _expensesSnapshot.documents.map((item) {
             final s = FireSnapshot(item);
             final json = s.data;
             return ExpenseData(
               id: json["uuid"],
               title: json["title"],
+              value: json["value"] ?? 0.0,
               tripID: json["tripID"],
               description: json["description"],
               accountID: json["accountID"],
@@ -54,12 +64,16 @@ class TripImpl extends TripRepository {
               description: json["description"],
               accountID: json["accountID"],
               createdAt: parseDateTime(json["createdAt"]),
-              items: expenses.takeWhile((exp) => exp.tripID == json["uuid"]).toList(),
+              items: expenses.tryWhere((exp) => exp.tripID == json["uuid"]),
             );
           }).toList();
 
           _tripsController.add(trips);
-          _activeTripController.add(activeItemId ?? (trips.isNotEmpty ? trips.last.id : null));
+
+          if (_activeTripController.value == null) {
+            final activeItemId = retrievePersistedUuid();
+            _activeTripController.add(activeItemId ?? (trips.isNotEmpty ? trips.last.id : null));
+          }
         },
       );
     }).listen((_) {});
@@ -71,12 +85,16 @@ class TripImpl extends TripRepository {
   final _activeTripController = BehaviorSubject<String>();
   final _tripsController = BehaviorSubject<List<TripData>>();
 
+  Stream<AccountModel> get account =>
+      stateMachine.stream.where((state) => state.account != null).map((state) => state.account);
+
   @override
   Stream<TripData> getActiveTrip() {
     return CombineLatestStream.combine2<String, List<TripData>, TripData>(
-        _activeTripController.stream.where((id) => id != null), getAllTrips(), (id, list) {
-      return list.firstWhere((item) => item.id == id);
-    }).asBroadcastStream();
+      _activeTripController.stream.where((id) => id != null),
+      getAllTrips(),
+      (id, list) => list.firstWhere((item) => item.id == id),
+    ).asBroadcastStream();
   }
 
   @override
@@ -90,13 +108,13 @@ class TripImpl extends TripRepository {
 
   @override
   void addNewTrip(TripData trip) {
-    StreamSubscription<AppState> sub;
-    sub = stateMachine.stream.where((state) => state.account != null).listen((state) {
+    StreamSubscription<AccountModel> sub;
+    sub = account.listen((_account) {
       final data = trip.toMap()
         ..addAll(<String, dynamic>{
-          "accountID": state.account.uuid,
+          "accountID": _account.uuid,
         });
-      firebase.db.trips(state.account.uuid).reference().document(trip.id).setData(data).then((r) {
+      firebase.db.trips(_account.uuid).reference().document(trip.id).setData(data).then((r) {
         setActiveTrip(trip);
         sub.cancel();
       });
@@ -105,7 +123,17 @@ class TripImpl extends TripRepository {
 
   @override
   void addExpenseToTrip(TripData trip, ExpenseData expense) {
-    throw UnimplementedError();
+    StreamSubscription<AccountModel> sub;
+    sub = account.listen((_account) {
+      final data = expense.toMap()
+        ..addAll(<String, dynamic>{
+          "tripID": trip.id,
+          "accountID": _account.uuid,
+        });
+      firebase.db.expenses(_account.uuid).reference().document(expense.id).setData(data).then((r) {
+        sub.cancel();
+      });
+    });
   }
 
   @override

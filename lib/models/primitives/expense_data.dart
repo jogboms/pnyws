@@ -40,6 +40,7 @@ class ExpenseData {
     return <String, dynamic>{
       "uuid": id,
       "title": title,
+      "value": value,
       "accountID": accountID,
       "tripID": tripID,
       "description": description,
