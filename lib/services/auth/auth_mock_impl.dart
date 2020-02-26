@@ -6,7 +6,7 @@ class AuthMockImpl implements AuthRepository {
   @override
   Stream<AccountModel> getAccount(String uuid) async* {
     await Future<void>.delayed(const Duration(seconds: 0));
-    yield AccountModel(uuid: 1, reference: MockDataReference());
+    yield AccountModel(uuid: "1", reference: MockDataReference());
   }
 
   @override
