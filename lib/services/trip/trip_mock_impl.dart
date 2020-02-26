@@ -8,10 +8,8 @@ import 'package:pnyws/repositories/trip_repository.dart';
 import 'package:pnyws/services/shared_prefs.dart';
 import 'package:rxdart/rxdart.dart';
 
-const ACTIVE_ITEM_KEY = "ACTIVE_ITEM_KEY";
-
-class TripMockImpl implements TripRepository {
-  TripMockImpl({@required this.pref}) {
+class TripMockImpl extends TripRepository {
+  TripMockImpl({@required SharedPrefs pref}) : super(pref: pref) {
     final trips = [
       TripData(
         title: "Lagos Trip",
@@ -28,11 +26,10 @@ class TripMockImpl implements TripRepository {
     ];
     _tripsController.add(trips);
 
-    final activeItemId = pref.getString(ACTIVE_ITEM_KEY);
+    final activeItemId = retrievePersistedUuid();
     _activeTripController.add(trips.firstWhere((item) => item.id == activeItemId, orElse: () => trips.last));
   }
 
-  final SharedPrefs pref;
   final _activeTripController = BehaviorSubject<TripData>();
   final _tripsController = BehaviorSubject<List<TripData>>();
 
@@ -44,11 +41,7 @@ class TripMockImpl implements TripRepository {
 
   @override
   void setActiveTrip(TripData trip) {
-    if (trip == null) {
-      pref.remove(ACTIVE_ITEM_KEY);
-    } else {
-      pref.setString(ACTIVE_ITEM_KEY, trip.id);
-    }
+    persistActiveUuid(trip?.id);
     _activeTripController.add(trip);
   }
 
