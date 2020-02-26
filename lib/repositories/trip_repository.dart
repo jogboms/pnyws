@@ -38,6 +38,10 @@ extension TripRepositoryX on TripRepository {
     return pref.getString(ACTIVE_ITEM_KEY);
   }
 
+  void removePersistedUuid() {
+    pref.remove(ACTIVE_ITEM_KEY);
+  }
+
   List<TripData> modifyTripFromList(List<TripData> trips, TripData trip) {
     return [...removeTripFromList(trips, trip), trip];
   }

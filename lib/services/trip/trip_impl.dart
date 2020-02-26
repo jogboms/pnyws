@@ -71,8 +71,10 @@ class TripImpl extends TripRepository {
           _tripsController.add(trips);
 
           if (_activeTripController.value == null) {
-            final activeItemId = retrievePersistedUuid();
-            _activeTripController.add(activeItemId ?? (trips.isNotEmpty ? trips.last.id : null));
+            final activeItemId = retrievePersistedUuid() ?? "";
+            _activeTripController
+                .add(activeItemId.isNotEmpty ? activeItemId : (trips.isNotEmpty ? trips.last.id : null));
+            removePersistedUuid();
           }
         },
       );
@@ -138,11 +140,26 @@ class TripImpl extends TripRepository {
 
   @override
   void removeExpenseFromTrip(TripData trip, ExpenseData expense) {
-    throw UnimplementedError();
+    StreamSubscription<AccountModel> sub;
+    sub = account.listen((_account) {
+      firebase.db.expenses(_account.uuid).reference().document(expense.id).delete().then((r) {
+        sub.cancel();
+      });
+    });
   }
 
   @override
   void removeTrip(TripData trip) {
-    throw UnimplementedError();
+    StreamSubscription<AccountModel> sub;
+    sub = account.listen((_account) {
+      firebase.db.trips(_account.uuid).reference().document(trip.id).delete().then((r) {
+        firebase.db.expenses(_account.uuid).where('tripID', isEqualTo: trip.id).getDocuments().then((snapshot) {
+          for (DocumentSnapshot ds in snapshot.documents) {
+            ds.reference.delete();
+          }
+          sub.cancel();
+        });
+      });
+    });
   }
 }
