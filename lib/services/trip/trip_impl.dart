@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:memoize/memoize.dart';
 import 'package:pnyws/firebase/firebase.dart';
 import 'package:pnyws/firebase/models.dart';
 import 'package:pnyws/models/account.dart';
@@ -20,6 +21,14 @@ DateTime parseDateTime(String serialized) {
   }
 }
 
+Map<String, List<T>> groupBy<T>(List<dynamic> list, String Function(dynamic) fn, T Function(dynamic) mapper) {
+  return list.fold(<String, List<T>>{}, (rv, dynamic x) {
+    final key = fn(x);
+    (rv[key] = rv[key] ?? <T>[]).add(mapper(x));
+    return rv;
+  });
+}
+
 extension ListX<E> on List<E> {
   List<E> tryWhere(bool test(E element)) {
     try {
@@ -29,6 +38,41 @@ extension ListX<E> on List<E> {
     }
   }
 }
+
+final memoizedExpensesFn = memo1<List<DocumentSnapshot>, Map<String, List<ExpenseData>>>(
+  (documents) => groupBy<ExpenseData>(
+    documents,
+    (dynamic item) => item["tripID"],
+    (dynamic item) {
+      final s = FireSnapshot(item);
+      final json = s.data;
+      return ExpenseData(
+        id: json["uuid"],
+        title: json["title"],
+        value: json["value"] ?? 0.0,
+        tripID: json["tripID"],
+        description: json["description"],
+        accountID: json["accountID"],
+        createdAt: parseDateTime(json["createdAt"]),
+      );
+    },
+  ),
+);
+
+final memoizedTripsFn = memo2<List<DocumentSnapshot>, Map<String, List<ExpenseData>>, List<TripData>>(
+  (documents, expensesMap) => documents.map((item) {
+    final s = FireSnapshot(item);
+    final json = s.data;
+    return TripData(
+      id: json["uuid"],
+      title: json["title"],
+      description: json["description"],
+      accountID: json["accountID"],
+      createdAt: parseDateTime(json["createdAt"]),
+      items: expensesMap[json["uuid"]] ?? [],
+    );
+  }).toList(),
+);
 
 class TripImpl extends TripRepository {
   TripImpl({
@@ -41,39 +85,18 @@ class TripImpl extends TripRepository {
         firebase.db.trips(_account.uuid).snapshots(),
         firebase.db.expenses(_account.uuid).snapshots(),
         (_tripsSnapshot, _expensesSnapshot) async {
-          final expenses = _expensesSnapshot.documents.map((item) {
-            final s = FireSnapshot(item);
-            final json = s.data;
-            return ExpenseData(
-              id: json["uuid"],
-              title: json["title"],
-              value: json["value"] ?? 0.0,
-              tripID: json["tripID"],
-              description: json["description"],
-              accountID: json["accountID"],
-              createdAt: parseDateTime(json["createdAt"]),
-            );
-          }).toList();
-
-          final trips = _tripsSnapshot.documents.map((item) {
-            final s = FireSnapshot(item);
-            final json = s.data;
-            return TripData(
-              id: json["uuid"],
-              title: json["title"],
-              description: json["description"],
-              accountID: json["accountID"],
-              createdAt: parseDateTime(json["createdAt"]),
-              items: expenses.tryWhere((exp) => exp.tripID == json["uuid"]),
-            );
-          }).toList();
+          final trips = memoizedTripsFn(
+            _tripsSnapshot.documents,
+            memoizedExpensesFn(_expensesSnapshot.documents),
+          );
 
           _tripsController.add(trips);
 
           if (_activeTripController.value == null) {
-            final activeItemId = retrievePersistedUuid() ?? "";
-            _activeTripController
-                .add(activeItemId.isNotEmpty ? activeItemId : (trips.isNotEmpty ? trips.last.id : null));
+            final activeItemId = retrievePersistedUuid();
+            _activeTripController.add(
+              activeItemId.isNotEmpty ? activeItemId : (trips.isNotEmpty ? trips.last.id : null),
+            );
             removePersistedUuid();
           }
         },
@@ -104,7 +127,7 @@ class TripImpl extends TripRepository {
 
   @override
   void setActiveTrip(TripData trip) {
-    persistActiveUuid(trip?.id);
+    super.setActiveTrip(trip);
     _activeTripController.add(trip?.id);
   }
 

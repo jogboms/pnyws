@@ -12,7 +12,10 @@ abstract class TripRepository {
 
   Stream<TripData> getActiveTrip();
 
-  void setActiveTrip(TripData trip);
+  @mustCallSuper
+  void setActiveTrip(TripData trip) {
+    persistActiveUuid(trip?.id);
+  }
 
   Stream<List<TripData>> getAllTrips();
 
@@ -35,7 +38,7 @@ extension TripRepositoryX on TripRepository {
   }
 
   String retrievePersistedUuid() {
-    return pref.getString(ACTIVE_ITEM_KEY);
+    return pref.getString(ACTIVE_ITEM_KEY) ?? "";
   }
 
   void removePersistedUuid() {

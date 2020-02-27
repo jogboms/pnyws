@@ -41,7 +41,7 @@ class TripMockImpl extends TripRepository {
 
   @override
   void setActiveTrip(TripData trip) {
-    persistActiveUuid(trip?.id);
+    super.setActiveTrip(trip);
     _activeTripController.add(trip);
   }
 
