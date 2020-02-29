@@ -10,6 +10,7 @@ import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/home/create_expense_modal.dart';
 import 'package:pnyws/screens/home/graph_view.dart';
 import 'package:pnyws/screens/home/sliver_expense_list.dart';
+import 'package:pnyws/utils/money.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
@@ -129,7 +130,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     ),
                     const ScaledBox.vertical(12),
                     Text(
-                      "₦${trip.items.fold<double>(0, (p, c) => p + c.value).round()}",
+                      Money(trip.items.fold<double>(0, (p, c) => p + c.value)).formatted,
                       style: theme.headline.copyWith(letterSpacing: 1.5),
                       textAlign: TextAlign.center,
                     ),

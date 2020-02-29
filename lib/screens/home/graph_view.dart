@@ -8,6 +8,7 @@ import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/screens/home/interpolate.dart';
+import 'package:pnyws/utils/money.dart';
 
 const kBarWidth = 44.0;
 const kBarSpacing = 4.0;
@@ -250,7 +251,7 @@ class RenderGraphBox extends RenderBox
         textAlign: TextAlign.center,
         textWidthBasis: TextWidthBasis.longestLine,
         text: TextSpan(
-          text: '₦${values[i].value.round()}',
+          text: Money(values[i].value).formatted,
           style: TextStyle(
             color: MkColors.primaryAccent.shade700,
             fontSize: 10,
