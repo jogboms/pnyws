@@ -69,9 +69,10 @@ final memoizedTripsFn = memo2<List<DocumentSnapshot>, Map<String, List<ExpenseDa
       description: json["description"],
       accountID: json["accountID"],
       createdAt: parseDateTime(json["createdAt"]),
-      items: expensesMap[json["uuid"]] ?? [],
+      items: (expensesMap[json["uuid"]] ?? [])..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
     );
-  }).toList(),
+  }).toList()
+    ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
 );
 
 class TripImpl extends TripRepository {
@@ -81,27 +82,26 @@ class TripImpl extends TripRepository {
     @required SharedPrefs pref,
   }) : super(pref: pref) {
     account.switchMap((_account) {
-      return CombineLatestStream.combine2<QuerySnapshot, QuerySnapshot, void>(
-        firebase.db.trips(_account.uuid).snapshots(),
-        firebase.db.expenses(_account.uuid).snapshots(),
-        (_tripsSnapshot, _expensesSnapshot) async {
-          final trips = memoizedTripsFn(
-            _tripsSnapshot.documents,
-            memoizedExpensesFn(_expensesSnapshot.documents),
-          );
+      return CombineLatestStream<QuerySnapshot, List<TripData>>(
+        [
+          firebase.db.trips(_account.uuid).snapshots().distinct(),
+          firebase.db.expenses(_account.uuid).snapshots().distinct(),
+        ],
+        (values) => memoizedTripsFn(
+          values[0].documents,
+          memoizedExpensesFn(values[1].documents),
+        )..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
+      ).distinct();
+    }).listen((trips) {
+      _tripsController.add(trips);
 
-          _tripsController.add(trips);
-
-          if (_activeTripController.value == null) {
-            final activeItemId = retrievePersistedUuid();
-            _activeTripController.add(
-              activeItemId.isNotEmpty ? activeItemId : (trips.isNotEmpty ? trips.last.uuid : null),
-            );
-            resetPersistedUuid();
-          }
-        },
-      );
-    }).listen((_) {});
+      if (_activeTripController.value == null) {
+        final activeItemId = retrievePersistedUuid();
+        _activeTripController.add(
+          activeItemId.isNotEmpty ? activeItemId : (trips.isNotEmpty ? trips.last.uuid : null),
+        );
+      }
+    });
   }
 
   final Firebase firebase;
