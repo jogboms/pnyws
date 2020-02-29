@@ -97,7 +97,7 @@ class TripImpl extends TripRepository {
             _activeTripController.add(
               activeItemId.isNotEmpty ? activeItemId : (trips.isNotEmpty ? trips.last.id : null),
             );
-            removePersistedUuid();
+            resetPersistedUuid();
           }
         },
       );
@@ -127,7 +127,7 @@ class TripImpl extends TripRepository {
 
   @override
   void setActiveTrip(TripData trip) {
-    super.setActiveTrip(trip);
+    persistActiveUuid(trip?.id);
     _activeTripController.add(trip?.id);
   }
 

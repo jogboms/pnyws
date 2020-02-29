@@ -26,8 +26,7 @@ class TripMockImpl extends TripRepository {
     ];
     _tripsController.add(trips);
 
-    final activeItemId = retrievePersistedUuid();
-    _activeTripController.add(trips.firstWhere((item) => item.id == activeItemId, orElse: () => trips.last));
+    _activeTripController.add(trips.last);
   }
 
   final _activeTripController = BehaviorSubject<TripData>();
@@ -41,7 +40,6 @@ class TripMockImpl extends TripRepository {
 
   @override
   void setActiveTrip(TripData trip) {
-    super.setActiveTrip(trip);
     _activeTripController.add(trip);
   }
 
@@ -73,5 +71,13 @@ class TripMockImpl extends TripRepository {
     if (_activeTripController.value == trip) {
       setActiveTrip(null);
     }
+  }
+
+  List<TripData> modifyTripFromList(List<TripData> trips, TripData trip) {
+    return [...removeTripFromList(trips, trip), trip];
+  }
+
+  List<TripData> removeTripFromList(List<TripData> trips, TripData trip) {
+    return trips.where((_trip) => _trip.id != trip.id).toList();
   }
 }

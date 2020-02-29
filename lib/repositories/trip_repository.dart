@@ -12,10 +12,7 @@ abstract class TripRepository {
 
   Stream<TripData> getActiveTrip();
 
-  @mustCallSuper
-  void setActiveTrip(TripData trip) {
-    persistActiveUuid(trip?.id);
-  }
+  void setActiveTrip(TripData trip) {}
 
   Stream<List<TripData>> getAllTrips();
 
@@ -31,7 +28,7 @@ abstract class TripRepository {
 extension TripRepositoryX on TripRepository {
   void persistActiveUuid(String uuid) {
     if (uuid == null) {
-      pref.remove(ACTIVE_ITEM_KEY);
+      resetPersistedUuid();
     } else {
       pref.setString(ACTIVE_ITEM_KEY, uuid);
     }
@@ -41,15 +38,7 @@ extension TripRepositoryX on TripRepository {
     return pref.getString(ACTIVE_ITEM_KEY) ?? "";
   }
 
-  void removePersistedUuid() {
+  void resetPersistedUuid() {
     pref.remove(ACTIVE_ITEM_KEY);
-  }
-
-  List<TripData> modifyTripFromList(List<TripData> trips, TripData trip) {
-    return [...removeTripFromList(trips, trip), trip];
-  }
-
-  List<TripData> removeTripFromList(List<TripData> trips, TripData trip) {
-    return trips.where((_trip) => _trip.id != trip.id).toList();
   }
 }
