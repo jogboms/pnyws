@@ -4,16 +4,16 @@ import 'package:uuid/uuid.dart';
 
 class TripData {
   TripData({
-    String id,
+    String uuid,
     @required this.title,
     this.accountID,
     this.description = "",
     this.items = const [],
     DateTime createdAt,
-  })  : id = id ?? Uuid().v4(),
+  })  : uuid = uuid ?? Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
-  final String id;
+  final String uuid;
   final String title;
   final String description;
   final String accountID;
@@ -22,12 +22,12 @@ class TripData {
 
   @override
   int get hashCode =>
-      id.hashCode ^ title.hashCode ^ description.hashCode ^ accountID.hashCode ^ items.hashCode ^ createdAt.hashCode;
+      uuid.hashCode ^ title.hashCode ^ description.hashCode ^ accountID.hashCode ^ items.hashCode ^ createdAt.hashCode;
 
   @override
   bool operator ==(Object other) =>
       other is TripData &&
-      other.id == id &&
+      other.uuid == uuid &&
       other.title == title &&
       other.description == description &&
       other.accountID == accountID &&
@@ -42,7 +42,7 @@ class TripData {
     List<ExpenseData> items,
   }) {
     return TripData(
-      id: id,
+      uuid: uuid,
       createdAt: createdAt,
       accountID: accountID,
       title: title ?? this.title,
@@ -53,7 +53,7 @@ class TripData {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      "uuid": id,
+      "uuid": uuid,
       "title": title,
       "accountID": accountID,
       "description": description,
@@ -63,6 +63,6 @@ class TripData {
 
   @override
   String toString() {
-    return "{id: $id, title: $title, description: $description, accountID: $accountID items: $items, createdAt: $createdAt}";
+    return "{uuid: $uuid, title: $title, description: $description, accountID: $accountID items: $items, createdAt: $createdAt}";
   }
 }

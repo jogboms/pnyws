@@ -47,7 +47,7 @@ final memoizedExpensesFn = memo1<List<DocumentSnapshot>, Map<String, List<Expens
       final s = FireSnapshot(item);
       final json = s.data;
       return ExpenseData(
-        id: json["uuid"],
+        uuid: json["uuid"],
         title: json["title"],
         value: json["value"] ?? 0.0,
         tripID: json["tripID"],
@@ -64,7 +64,7 @@ final memoizedTripsFn = memo2<List<DocumentSnapshot>, Map<String, List<ExpenseDa
     final s = FireSnapshot(item);
     final json = s.data;
     return TripData(
-      id: json["uuid"],
+      uuid: json["uuid"],
       title: json["title"],
       description: json["description"],
       accountID: json["accountID"],
@@ -95,7 +95,7 @@ class TripImpl extends TripRepository {
           if (_activeTripController.value == null) {
             final activeItemId = retrievePersistedUuid();
             _activeTripController.add(
-              activeItemId.isNotEmpty ? activeItemId : (trips.isNotEmpty ? trips.last.id : null),
+              activeItemId.isNotEmpty ? activeItemId : (trips.isNotEmpty ? trips.last.uuid : null),
             );
             resetPersistedUuid();
           }
@@ -118,7 +118,7 @@ class TripImpl extends TripRepository {
     return CombineLatestStream.combine2<String, List<TripData>, TripData>(
       _activeTripController.stream.where((id) => id != null),
       getAllTrips(),
-      (id, list) => list.firstWhere((item) => item.id == id),
+      (id, list) => list.firstWhere((item) => item.uuid == id),
     ).asBroadcastStream();
   }
 
@@ -127,8 +127,8 @@ class TripImpl extends TripRepository {
 
   @override
   void setActiveTrip(TripData trip) {
-    persistActiveUuid(trip?.id);
-    _activeTripController.add(trip?.id);
+    persistActiveUuid(trip?.uuid);
+    _activeTripController.add(trip?.uuid);
   }
 
   @override
@@ -139,7 +139,7 @@ class TripImpl extends TripRepository {
         ..addAll(<String, dynamic>{
           "accountID": _account.uuid,
         });
-      firebase.db.trips(_account.uuid).reference().document(trip.id).setData(data).then((r) {
+      firebase.db.trips(_account.uuid).reference().document(trip.uuid).setData(data).then((r) {
         setActiveTrip(trip);
         sub.cancel();
       });
@@ -152,10 +152,10 @@ class TripImpl extends TripRepository {
     sub = account.listen((_account) {
       final data = expense.toMap()
         ..addAll(<String, dynamic>{
-          "tripID": trip.id,
+          "tripID": trip.uuid,
           "accountID": _account.uuid,
         });
-      firebase.db.expenses(_account.uuid).reference().document(expense.id).setData(data).then((r) {
+      firebase.db.expenses(_account.uuid).reference().document(expense.uuid).setData(data).then((r) {
         sub.cancel();
       });
     });
@@ -165,7 +165,7 @@ class TripImpl extends TripRepository {
   void removeExpenseFromTrip(TripData trip, ExpenseData expense) {
     StreamSubscription<AccountModel> sub;
     sub = account.listen((_account) {
-      firebase.db.expenses(_account.uuid).reference().document(expense.id).delete().then((r) {
+      firebase.db.expenses(_account.uuid).reference().document(expense.uuid).delete().then((r) {
         sub.cancel();
       });
     });
@@ -175,8 +175,8 @@ class TripImpl extends TripRepository {
   void removeTrip(TripData trip) {
     StreamSubscription<AccountModel> sub;
     sub = account.listen((_account) {
-      firebase.db.trips(_account.uuid).reference().document(trip.id).delete().then((r) {
-        firebase.db.expenses(_account.uuid).where('tripID', isEqualTo: trip.id).getDocuments().then((snapshot) {
+      firebase.db.trips(_account.uuid).reference().document(trip.uuid).delete().then((r) {
+        firebase.db.expenses(_account.uuid).where('tripID', isEqualTo: trip.uuid).getDocuments().then((snapshot) {
           for (DocumentSnapshot ds in snapshot.documents) {
             ds.reference.delete();
           }

@@ -59,7 +59,7 @@ class TripMockImpl extends TripRepository {
   @override
   void removeExpenseFromTrip(TripData trip, ExpenseData expense) {
     final newTrip = trip.copyWith(
-      items: trip.items.where((_expense) => _expense.id != expense.id).toList(),
+      items: trip.items.where((_expense) => _expense.uuid != expense.uuid).toList(),
     );
     _tripsController.add(modifyTripFromList(_tripsController.value, newTrip));
     _activeTripController.add(newTrip);
@@ -78,6 +78,6 @@ class TripMockImpl extends TripRepository {
   }
 
   List<TripData> removeTripFromList(List<TripData> trips, TripData trip) {
-    return trips.where((_trip) => _trip.id != trip.id).toList();
+    return trips.where((_trip) => _trip.uuid != trip.uuid).toList();
   }
 }
