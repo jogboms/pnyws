@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnyws/constants/mk_strings.dart';
-import 'package:pnyws/models/account.dart';
+import 'package:pnyws/models/primitives/account_data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
@@ -26,7 +26,7 @@ class _SplashPageState extends State<SplashPage> {
         stream: _stream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            Registry.di().stateMachine.add((state) => state.copyWith(account: AccountModel(uuid: snapshot.data)));
+            Registry.di().stateMachine.add((state) => state.copyWith(account: AccountData(uuid: snapshot.data)));
             WidgetsBinding.instance.addPostFrameCallback(
               (_) async {
                 Registry.di().sharedCoordinator.toHome();

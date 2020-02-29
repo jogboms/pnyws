@@ -1,12 +1,11 @@
-import 'package:pnyws/firebase/models.dart';
-import 'package:pnyws/models/account.dart';
+import 'package:pnyws/models/primitives/account_data.dart';
 import 'package:pnyws/repositories/auth_repository.dart';
 
 class AuthMockImpl implements AuthRepository {
   @override
-  Stream<AccountModel> getAccount(String uuid) async* {
+  Stream<AccountData> getAccount(String uuid) async* {
     await Future<void>.delayed(const Duration(seconds: 0));
-    yield AccountModel(uuid: "1", reference: MockDataReference());
+    yield AccountData(uuid: "1");
   }
 
   @override
@@ -21,5 +20,5 @@ class AuthMockImpl implements AuthRepository {
   Future<void> signOut() async {}
 
   @override
-  Future<void> signUp(AccountModel account) async {}
+  Future<void> signUp(AccountData account) async {}
 }

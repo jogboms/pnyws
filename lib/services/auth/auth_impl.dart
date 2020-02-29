@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:pnyws/firebase/firebase.dart';
 import 'package:pnyws/firebase/models.dart';
-import 'package:pnyws/models/account.dart';
+import 'package:pnyws/models/primitives/account_data.dart';
 import 'package:pnyws/repositories/auth_repository.dart';
 
 class AuthImpl implements AuthRepository {
@@ -19,15 +19,15 @@ class AuthImpl implements AuthRepository {
   Future<void> signOut() => firebase.auth.signOutWithGoogle();
 
   @override
-  Future<void> signUp(AccountModel account) async {
-    await account.reference.updateData(account.toMap());
+  Future<void> signUp(AccountData account) async {
+    await firebase.db.account(account.uuid).updateData(account.toMap());
   }
 
   @override
-  Stream<AccountModel> getAccount(String uuid) {
+  Stream<AccountData> getAccount(String uuid) {
     return firebase.db.account(uuid).snapshots().map((snapshot) {
-      final s = FireSnapshot(snapshot);
-      return AccountModel.fromJson(s.data, s.reference);
+      final json = FireSnapshot(snapshot).data;
+      return AccountData(uuid: json["uuid"]);
     });
   }
 }

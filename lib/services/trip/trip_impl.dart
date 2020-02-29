@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:memoize/memoize.dart';
 import 'package:pnyws/firebase/firebase.dart';
 import 'package:pnyws/firebase/models.dart';
-import 'package:pnyws/models/account.dart';
+import 'package:pnyws/models/primitives/account_data.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
 import 'package:pnyws/repositories/trip_repository.dart';
@@ -110,7 +110,7 @@ class TripImpl extends TripRepository {
   final _activeTripController = BehaviorSubject<String>();
   final _tripsController = BehaviorSubject<List<TripData>>();
 
-  Stream<AccountModel> get account =>
+  Stream<AccountData> get account =>
       stateMachine.stream.where((state) => state.account != null).map((state) => state.account);
 
   @override
@@ -133,7 +133,7 @@ class TripImpl extends TripRepository {
 
   @override
   void addNewTrip(TripData trip) {
-    StreamSubscription<AccountModel> sub;
+    StreamSubscription<AccountData> sub;
     sub = account.listen((_account) {
       final data = trip.toMap()
         ..addAll(<String, dynamic>{
@@ -148,7 +148,7 @@ class TripImpl extends TripRepository {
 
   @override
   void addExpenseToTrip(TripData trip, ExpenseData expense) {
-    StreamSubscription<AccountModel> sub;
+    StreamSubscription<AccountData> sub;
     sub = account.listen((_account) {
       final data = expense.toMap()
         ..addAll(<String, dynamic>{
@@ -163,7 +163,7 @@ class TripImpl extends TripRepository {
 
   @override
   void removeExpenseFromTrip(TripData trip, ExpenseData expense) {
-    StreamSubscription<AccountModel> sub;
+    StreamSubscription<AccountData> sub;
     sub = account.listen((_account) {
       firebase.db.expenses(_account.uuid).reference().document(expense.uuid).delete().then((r) {
         sub.cancel();
@@ -173,7 +173,7 @@ class TripImpl extends TripRepository {
 
   @override
   void removeTrip(TripData trip) {
-    StreamSubscription<AccountModel> sub;
+    StreamSubscription<AccountData> sub;
     sub = account.listen((_account) {
       firebase.db.trips(_account.uuid).reference().document(trip.uuid).delete().then((r) {
         firebase.db.expenses(_account.uuid).where('tripID', isEqualTo: trip.uuid).getDocuments().then((snapshot) {

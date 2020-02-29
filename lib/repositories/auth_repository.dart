@@ -1,4 +1,4 @@
-import 'package:pnyws/models/account.dart';
+import 'package:pnyws/models/primitives/account_data.dart';
 
 abstract class AuthRepository {
   Future<void> signInWithGoogle();
@@ -7,7 +7,7 @@ abstract class AuthRepository {
 
   Future<void> signOut();
 
-  Future<void> signUp(AccountModel account);
+  Future<void> signUp(AccountData account);
 
-  Stream<AccountModel> getAccount(String uuid);
+  Stream<AccountData> getAccount(String uuid);
 }
