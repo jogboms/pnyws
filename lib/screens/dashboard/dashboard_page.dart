@@ -5,6 +5,7 @@ import 'package:pnyws/models/primitives/trip_data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/dashboard/create_trip_modal.dart';
 import 'package:pnyws/screens/dashboard/trip_list_item.dart';
+import 'package:pnyws/utils/pair.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -17,13 +18,13 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  Stream<List<TripData>> stream;
+  Stream<Pair<List<TripData>, TripData>> stream;
 
   @override
   void initState() {
     super.initState();
 
-    stream = Registry.di().repository.trip.getAllTrips();
+    stream = Registry.di().repository.trip.getAllTripsWithSelected();
   }
 
   @override
@@ -62,22 +63,23 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ],
           ),
-          StreamBuilder<List<TripData>>(
+          StreamBuilder<Pair<List<TripData>, TripData>>(
             stream: stream,
-            builder: (context, AsyncSnapshot<List<TripData>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
                 return SliverFillRemaining(
                   child: Center(child: Text("Hang on...")),
                 );
               }
 
-              if (snapshot.hasData && (snapshot.data == null || snapshot.data.isEmpty)) {
+              if (snapshot.hasData && (snapshot.data == null || snapshot.data.first.isEmpty)) {
                 return SliverFillRemaining(
                   child: Center(child: Text("Create a Trip.")),
                 );
               }
 
-              final values = snapshot.data;
+              final values = snapshot.data.first;
+              final selectedTrip = snapshot.data.second;
 
               return SliverPadding(
                 padding: EdgeInsets.only(bottom: 84),
@@ -85,10 +87,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   delegate: SliverChildBuilderDelegate(
                     (_, index) {
                       final item = values[values.length - 1 - index];
-                      return TripListItem(
-                        item: values[values.length - 1 - index],
-                        isActive: widget.selectedTrip == item,
-                      );
+                      return TripListItem(item: item, isActive: selectedTrip == item);
                     },
                     childCount: values.length,
                   ),

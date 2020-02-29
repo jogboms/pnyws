@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
 import 'package:pnyws/services/shared_prefs.dart';
+import 'package:pnyws/utils/pair.dart';
+import 'package:rxdart/rxdart.dart';
 
 const ACTIVE_ITEM_KEY = "ACTIVE_ITEM_KEY";
 
@@ -15,6 +17,13 @@ abstract class TripRepository {
   void setActiveTrip(TripData trip);
 
   Stream<List<TripData>> getAllTrips();
+
+  Stream<Pair<List<TripData>, TripData>> getAllTripsWithSelected() {
+    return CombineLatestStream<dynamic, Pair<List<TripData>, TripData>>(
+      [getAllTrips(), getActiveTrip()],
+      (values) => Pair<List<TripData>, TripData>(values[0], values[1]),
+    ).asBroadcastStream();
+  }
 
   void addNewTrip(TripData trip);
 
