@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:pnyws/repositories/auth_repository.dart';
-import 'package:pnyws/repositories/trip_repository.dart';
+import 'package:pnyws/repositories/auth/auth_repository.dart';
+import 'package:pnyws/repositories/trip/trip_repository.dart';
 
 class Repository {
   Repository({

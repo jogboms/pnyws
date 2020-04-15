@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
-import 'package:pnyws/repositories/trip_repository.dart';
+import 'package:pnyws/repositories/trip/trip_repository.dart';
 import 'package:pnyws/services/shared_prefs.dart';
 import 'package:rxdart/rxdart.dart';
 

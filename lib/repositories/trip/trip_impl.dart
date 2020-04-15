@@ -8,7 +8,7 @@ import 'package:pnyws/firebase/models.dart';
 import 'package:pnyws/models/primitives/account_data.dart';
 import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:pnyws/models/primitives/trip_data.dart';
-import 'package:pnyws/repositories/trip_repository.dart';
+import 'package:pnyws/repositories/trip/trip_repository.dart';
 import 'package:pnyws/services/shared_prefs.dart';
 import 'package:pnyws/state/state_machine.dart';
 import 'package:rxdart/rxdart.dart';

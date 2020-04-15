@@ -6,12 +6,9 @@ import 'package:mockito/mockito.dart';
 import 'package:pnyws/app.dart';
 import 'package:pnyws/environments/environment.dart';
 import 'package:pnyws/registry.dart';
-import 'package:pnyws/repositories/auth_repository.dart';
-import 'package:pnyws/repositories/repository.dart';
-import 'package:pnyws/repositories/trip_repository.dart';
+import 'package:pnyws/repositories/repositories.dart';
 import 'package:pnyws/screens/splash/splash_page.dart';
-import 'package:pnyws/services/session.dart';
-import 'package:pnyws/services/shared_prefs.dart';
+import 'package:pnyws/services/services.dart';
 import 'package:pnyws/state/state_machine.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
