@@ -15,13 +15,13 @@ prod_ios:
 	flutter build ios -t lib/main_prod.dart
 
 install_ios_dev:
-	flutter build ios -t lib/main_dev.dart && flutter install -d aa61c6e8701a763b7aa199eea33bbc5bb708b039
+	flutter build ios -t lib/main_dev.dart && flutter install -d 00008020-001454EC14D2002E
 
 install_ios_mock:
-	make mock_ios && flutter install -d aa61c6e8701a763b7aa199eea33bbc5bb708b039
+	make mock_ios && flutter install -d 00008020-001454EC14D2002E
 
 install_ios_prod:
-	make prod_ios && flutter install -d aa61c6e8701a763b7aa199eea33bbc5bb708b039
+	make prod_ios && flutter install -d 00008020-001454EC14D2002E
 
 # Android
 mock_android:

@@ -133,9 +133,9 @@ class ThemeProvider extends InheritedWidget {
       scaffoldBackgroundColor: MkColors.primary,
       iconTheme: theme.iconTheme.copyWith(color: kTextBaseColor),
       textTheme: theme.textTheme.copyWith(
-        body1: theme.textTheme.body1.merge(body1),
+        bodyText2: theme.textTheme.bodyText2.merge(body1),
         button: theme.textTheme.button.merge(button),
-        subhead: theme.textTheme.button.merge(subhead1),
+        subtitle1: theme.textTheme.button.merge(subhead1),
       ),
       buttonTheme: theme.buttonTheme.copyWith(
         height: kButtonHeight,
@@ -178,4 +178,24 @@ class ThemeProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(ThemeProvider oldWidget) => false;
+}
+
+extension TextStyleX on TextStyle {
+  TextStyle get primary => copyWith(color: MkColors.primary);
+
+  TextStyle get secondary => copyWith(color: MkColors.secondary);
+
+  TextStyle get white => copyWith(color: MkColors.white);
+
+  TextStyle get bold => copyWith(fontWeight: MkStyle.bold);
+
+  TextStyle get semibold => copyWith(fontWeight: MkStyle.semibold);
+
+  TextStyle get light => copyWith(fontWeight: MkStyle.light);
+
+  TextStyle get medium => copyWith(fontWeight: MkStyle.medium);
+}
+
+extension BuildContextX on BuildContext {
+  ThemeProvider get theme => ThemeProvider.of(this);
 }

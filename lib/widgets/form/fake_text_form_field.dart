@@ -33,7 +33,6 @@ class FakeTextFormFieldState<T> extends State<FakeTextFormField<T>> with Dismiss
 
   @override
   Widget build(BuildContext context) {
-    final _theme = ThemeProvider.of(context);
     return FormField<T>(
       initialValue: widget.initialValue != null ? widget.initialValue : null,
       autovalidate: widget.autovalidate,
@@ -43,7 +42,7 @@ class FakeTextFormFieldState<T> extends State<FakeTextFormField<T>> with Dismiss
           textAlign: widget.textAlign,
           decoration: widget.decoration,
           child: DefaultTextStyle(
-            style: _buildTextStyle(field.value, _theme),
+            style: _buildTextStyle(field.value, context.theme),
             child: widget.child ?? Text(_buildTextContent(field.value)),
             textAlign: widget.textAlign,
           ),

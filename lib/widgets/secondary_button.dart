@@ -22,7 +22,7 @@ class SecondaryButton extends StatelessWidget {
         side: MkBorderSide(width: 4, color: Colors.white),
       ),
       fillColor: MkColors.secondaryAccent,
-      child: DefaultTextStyle(child: child, style: ThemeProvider.of(context).button),
+      child: DefaultTextStyle(child: child, style: context.theme.button),
       onPressed: onPressed,
     );
   }
