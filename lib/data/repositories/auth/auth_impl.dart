@@ -19,12 +19,12 @@ class AuthImpl implements AuthRepository {
 
   @override
   Future<void> signUp(AccountData account) async {
-    await firebase.db.account(account.uuid).updateData(account.toMap());
+    await firebase.db.accounts.fetchOne(account.uuid).update(account.toMap());
   }
 
   @override
   Stream<AccountData> getAccount(String uuid) {
-    return firebase.db.account(uuid).snapshots().map((snapshot) {
+    return firebase.db.accounts.fetchOne(uuid).snapshots().map((snapshot) {
       final json = FireSnapshot(snapshot).data;
       return AccountData(uuid: json["uuid"]);
     });

@@ -23,12 +23,12 @@ class TripImpl extends TripRepository {
     account.switchMap((_account) {
       return CombineLatestStream<QuerySnapshot, List<TripData>>(
         [
-          firebase.db.trips(_account.uuid).snapshots().distinct(),
-          firebase.db.expenses(_account.uuid).snapshots().distinct(),
+          firebase.db.trips.fetchAll(_account.uuid).snapshots().distinct(),
+          firebase.db.expenses.fetchAll(_account.uuid).snapshots().distinct(),
         ],
         (values) => memoizedTripsFn(
-          values[0].documents,
-          memoizedExpensesFn(values[1].documents),
+          values[0].docs,
+          memoizedExpensesFn(values[1].docs),
         )..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
       ).distinct();
     }).listen((trips) {
@@ -73,55 +73,52 @@ class TripImpl extends TripRepository {
   @override
   void addNewTrip(TripData trip) {
     StreamSubscription<AccountData> sub;
-    sub = account.listen((_account) {
+    sub = account.listen((_account) async {
       final data = trip.toMap()
         ..addAll(<String, dynamic>{
           "accountID": _account.uuid,
         });
-      firebase.db.trips(_account.uuid).reference().document(trip.uuid).setData(data).then((r) {
-        setActiveTrip(trip);
-        sub.cancel();
-      });
+
+      await firebase.db.trips.fetchOne(trip.uuid).set(data);
+      setActiveTrip(trip);
+      await sub.cancel();
     });
   }
 
   @override
   void addExpenseToTrip(TripData trip, ExpenseData expense) {
     StreamSubscription<AccountData> sub;
-    sub = account.listen((_account) {
+    sub = account.listen((_account) async {
       final data = expense.toMap()
         ..addAll(<String, dynamic>{
           "tripID": trip.uuid,
           "accountID": _account.uuid,
         });
-      firebase.db.expenses(_account.uuid).reference().document(expense.uuid).setData(data).then((r) {
-        sub.cancel();
-      });
+      await firebase.db.expenses.fetchOne(expense.uuid).set(data);
+      await sub.cancel();
     });
   }
 
   @override
   void removeExpenseFromTrip(TripData trip, ExpenseData expense) {
     StreamSubscription<AccountData> sub;
-    sub = account.listen((_account) {
-      firebase.db.expenses(_account.uuid).reference().document(expense.uuid).delete().then((r) {
-        sub.cancel();
-      });
+    sub = account.listen((_account) async {
+      await firebase.db.expenses.fetchOne(expense.uuid).delete();
+      await sub.cancel();
     });
   }
 
   @override
   void removeTrip(TripData trip) {
     StreamSubscription<AccountData> sub;
-    sub = account.listen((_account) {
-      firebase.db.trips(_account.uuid).reference().document(trip.uuid).delete().then((r) {
-        firebase.db.expenses(_account.uuid).where('tripID', isEqualTo: trip.uuid).getDocuments().then((snapshot) {
-          for (DocumentSnapshot ds in snapshot.documents) {
-            ds.reference.delete();
-          }
-          sub.cancel();
-        });
-      });
+    sub = account.listen((_account) async {
+      await firebase.db.trips.fetchOne(trip.uuid).delete();
+      final snapshot = await firebase.db.expenses.fetchByTrip(trip.uuid).get();
+
+      for (DocumentSnapshot ds in snapshot.docs) {
+        await ds.reference.delete();
+      }
+      await sub.cancel();
     });
   }
 }

@@ -29,7 +29,7 @@ void main({
     case Environment.DEVELOPMENT:
     case Environment.PRODUCTION:
       {
-        final firebase = Firebase();
+        final firebase = await Firebase.initialize();
         repository = Repository(
           auth: AuthImpl(firebase: firebase),
           trip: TripImpl(firebase: firebase, pref: sharedPrefs, stateMachine: stateMachine),
