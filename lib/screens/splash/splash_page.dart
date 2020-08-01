@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnyws/constants/mk_strings.dart';
-import 'package:pnyws/models/primitives/account_data.dart';
+import 'package:pnyws/data/data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 

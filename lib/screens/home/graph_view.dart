@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
-import 'package:pnyws/models/primitives/expense_data.dart';
+import 'package:pnyws/data/data.dart';
 import 'package:pnyws/screens/home/interpolate.dart';
 import 'package:pnyws/utils/money.dart';
 

@@ -1,4 +1,4 @@
-import 'package:pnyws/models/primitives/account_data.dart';
+import 'package:pnyws/data/data.dart';
 
 class AppState {
   const AppState({this.account});

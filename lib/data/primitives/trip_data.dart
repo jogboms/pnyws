@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:pnyws/models/primitives/expense_data.dart';
 import 'package:uuid/uuid.dart';
+
+import 'expense_data.dart';
 
 class TripData {
   TripData({

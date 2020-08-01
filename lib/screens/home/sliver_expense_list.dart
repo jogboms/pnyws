@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pnyws/models/primitives/trip_data.dart';
+import 'package:pnyws/data/data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/home/expense_list_item.dart';
 
