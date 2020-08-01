@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:pnyws/data/data.dart';
-import 'package:pnyws/firebase/firebase.dart';
-import 'package:pnyws/firebase/models.dart';
-import 'package:pnyws/repositories/auth/auth_repository.dart';
+
+import './auth_repository.dart';
 
 class AuthImpl implements AuthRepository {
   AuthImpl({@required this.firebase});

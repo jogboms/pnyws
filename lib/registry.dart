@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:injector/injector.dart';
 import 'package:pnyws/coordinator/shared_coordinator.dart';
-import 'package:pnyws/repositories/repository.dart';
+import 'package:pnyws/data/data.dart';
 import 'package:pnyws/services/session.dart';
 import 'package:pnyws/services/shared_prefs.dart';
 import 'package:pnyws/state/state_machine.dart';

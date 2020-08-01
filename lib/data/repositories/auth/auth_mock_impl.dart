@@ -1,5 +1,6 @@
 import 'package:pnyws/data/data.dart';
-import 'package:pnyws/repositories/auth/auth_repository.dart';
+
+import './auth_repository.dart';
 
 class AuthMockImpl implements AuthRepository {
   @override

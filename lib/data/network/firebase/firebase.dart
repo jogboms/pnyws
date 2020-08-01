@@ -2,8 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:pnyws/firebase/auth.dart';
-import 'package:pnyws/firebase/cloud_db.dart';
+
+import 'auth.dart';
+import 'cloud_db.dart';
+
+export 'data_reference.dart';
+export 'models.dart';
 
 class Firebase {
   factory Firebase() {

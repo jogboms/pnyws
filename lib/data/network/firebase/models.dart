@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pnyws/firebase/data_reference.dart';
+
+import 'data_reference.dart';
 
 class FireSnapshot {
   FireSnapshot(DocumentSnapshot doc)

@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:pnyws/data/data.dart';
-import 'package:pnyws/repositories/trip/trip_repository.dart';
 import 'package:rxdart/rxdart.dart';
+
+import './trip_repository.dart';
 
 class TripMockImpl extends TripRepository {
   TripMockImpl({@required SharedPrefs pref}) : super(pref: pref) {
