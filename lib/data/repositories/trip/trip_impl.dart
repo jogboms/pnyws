@@ -10,8 +10,6 @@ import 'package:rxdart/rxdart.dart';
 
 import './trip_repository.dart';
 
-
-
 const ACTIVE_ITEM_KEY = "ACTIVE_ITEM_KEY";
 
 class TripImpl extends TripRepository {
@@ -122,4 +120,82 @@ class TripImpl extends TripRepository {
       await sub.cancel();
     });
   }
+
+  void persistActiveUuid(String uuid) {
+    if (uuid == null) {
+      resetPersistedUuid();
+    } else {
+      pref.setString(ACTIVE_ITEM_KEY, uuid);
+    }
+  }
+
+  String retrievePersistedUuid() {
+    return pref.getString(ACTIVE_ITEM_KEY) ?? "";
+  }
+
+  void resetPersistedUuid() {
+    pref.remove(ACTIVE_ITEM_KEY);
+  }
 }
+
+DateTime parseDateTime(String serialized) {
+  try {
+    return DateTime.tryParse(serialized);
+  } catch (e) {
+    return DateTime.now();
+  }
+}
+
+Map<String, List<T>> groupBy<T>(List<dynamic> list, String Function(dynamic) fn, T Function(dynamic) mapper) {
+  return list.fold(<String, List<T>>{}, (rv, dynamic x) {
+    final key = fn(x);
+    (rv[key] = rv[key] ?? <T>[]).add(mapper(x));
+    return rv;
+  });
+}
+
+extension ListX<E> on List<E> {
+  List<E> tryWhere(bool test(E element)) {
+    try {
+      return where(test).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+}
+
+final memoizedExpensesFn = memo1<List<DocumentSnapshot>, Map<String, List<ExpenseData>>>(
+  (documents) => groupBy<ExpenseData>(
+    documents,
+    (dynamic item) => item["tripID"],
+    (dynamic item) {
+      final s = FireSnapshot(item);
+      final json = s.data;
+      return ExpenseData(
+        uuid: json["uuid"],
+        title: json["title"],
+        value: json["value"] ?? 0.0,
+        tripID: json["tripID"],
+        description: json["description"],
+        accountID: json["accountID"],
+        createdAt: parseDateTime(json["createdAt"]),
+      );
+    },
+  ),
+);
+
+final memoizedTripsFn = memo2<List<DocumentSnapshot>, Map<String, List<ExpenseData>>, List<TripData>>(
+  (documents, expensesMap) => documents.map((item) {
+    final s = FireSnapshot(item);
+    final json = s.data;
+    return TripData(
+      uuid: json["uuid"],
+      title: json["title"],
+      description: json["description"],
+      accountID: json["accountID"],
+      createdAt: parseDateTime(json["createdAt"]),
+      items: (expensesMap[json["uuid"]] ?? [])..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
+    );
+  }).toList()
+    ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
+);
