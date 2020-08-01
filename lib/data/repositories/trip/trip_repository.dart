@@ -5,10 +5,6 @@ import 'package:rxdart/rxdart.dart';
 const ACTIVE_ITEM_KEY = "ACTIVE_ITEM_KEY";
 
 abstract class TripRepository {
-  TripRepository({@required this.pref});
-
-  final SharedPrefs pref;
-
   Stream<TripData> getActiveTrip();
 
   void setActiveTrip(TripData trip);

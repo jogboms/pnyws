@@ -7,7 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import './trip_repository.dart';
 
 class TripMockImpl extends TripRepository {
-  TripMockImpl({@required SharedPrefs pref}) : super(pref: pref) {
+  TripMockImpl() {
     final trips = [
       TripData(
         title: "Lagos Trip",

@@ -18,8 +18,8 @@ class TripImpl extends TripRepository {
   TripImpl({
     @required this.firebase,
     @required this.stateMachine,
-    @required SharedPrefs pref,
-  }) : super(pref: pref) {
+    @required this.pref,
+  }) {
     account.switchMap((_account) {
       return CombineLatestStream<QuerySnapshot, List<TripData>>(
         [
@@ -45,6 +45,7 @@ class TripImpl extends TripRepository {
 
   final Firebase firebase;
   final StateMachine stateMachine;
+  final SharedPrefs pref;
 
   final _activeTripController = BehaviorSubject<String>();
   final _tripsController = BehaviorSubject<List<TripData>>();

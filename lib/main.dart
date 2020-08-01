@@ -38,10 +38,7 @@ void main({
       }
     case Environment.MOCK:
     default:
-      repository = Repository(
-        auth: AuthMockImpl(),
-        trip: TripMockImpl(pref: sharedPrefs),
-      );
+      repository = Repository(auth: AuthMockImpl(), trip: TripMockImpl());
   }
 
   Registry().initialize(
