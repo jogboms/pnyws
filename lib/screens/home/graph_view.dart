@@ -206,8 +206,7 @@ class RenderGraphBox extends RenderBox
         ..shader = ui.Gradient.linear(
           rect.centerLeft,
           rect.centerRight,
-          [MkColors.secondaryAccent, Colors.yellowAccent, Colors.purpleAccent, Colors.redAccent],
-          [.25, .5, .75, 1],
+          [MkColors.secondaryAccent, Colors.yellowAccent],
         ),
     );
 
