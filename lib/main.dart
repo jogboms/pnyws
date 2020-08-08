@@ -7,7 +7,7 @@ import 'package:pnyws/environments/environment.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/services/services.dart';
 import 'package:pnyws/state/state_machine.dart';
-import 'package:pnyws/utils/mk_first_time_login_check.dart';
+import 'package:pnyws/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main({

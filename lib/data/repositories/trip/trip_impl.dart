@@ -6,6 +6,7 @@ import 'package:memoize/memoize.dart';
 import 'package:pnyws/data/data.dart';
 import 'package:pnyws/services/shared_prefs.dart';
 import 'package:pnyws/state/state_machine.dart';
+import 'package:pnyws/utils/utils.dart';
 import 'package:rxdart/rxdart.dart';
 
 import './trip_repository.dart';
@@ -135,32 +136,6 @@ class TripImpl extends TripRepository {
 
   void resetPersistedUuid() {
     pref.remove(ACTIVE_ITEM_KEY);
-  }
-}
-
-DateTime parseDateTime(String serialized) {
-  try {
-    return DateTime.tryParse(serialized);
-  } catch (e) {
-    return DateTime.now();
-  }
-}
-
-Map<String, List<T>> groupBy<T>(List<dynamic> list, String Function(dynamic) fn, T Function(dynamic) mapper) {
-  return list.fold(<String, List<T>>{}, (rv, dynamic x) {
-    final key = fn(x);
-    (rv[key] = rv[key] ?? <T>[]).add(mapper(x));
-    return rv;
-  });
-}
-
-extension ListX<E> on List<E> {
-  List<E> tryWhere(bool test(E element)) {
-    try {
-      return where(test).toList();
-    } catch (e) {
-      return [];
-    }
   }
 }
 

@@ -8,7 +8,7 @@ import 'package:pnyws/constants/mk_colors.dart';
 import 'package:pnyws/constants/mk_style.dart';
 import 'package:pnyws/data/data.dart';
 import 'package:pnyws/screens/home/interpolate.dart';
-import 'package:pnyws/utils/money.dart';
+import 'package:pnyws/utils/utils.dart';
 
 const kBarWidth = 44.0;
 const kBarSpacing = 4.0;

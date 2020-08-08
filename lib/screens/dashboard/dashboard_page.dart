@@ -5,7 +5,7 @@ import 'package:pnyws/data/data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/dashboard/create_trip_modal.dart';
 import 'package:pnyws/screens/dashboard/trip_list_item.dart';
-import 'package:pnyws/utils/pair.dart';
+import 'package:pnyws/utils/utils.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
 class DashboardPage extends StatefulWidget {

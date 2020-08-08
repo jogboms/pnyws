@@ -1,5 +1,5 @@
 import 'package:pnyws/data/data.dart';
-import 'package:pnyws/utils/pair.dart';
+import 'package:pnyws/utils/utils.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class TripRepository {

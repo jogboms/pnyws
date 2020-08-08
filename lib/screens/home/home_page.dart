@@ -9,7 +9,7 @@ import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/home/create_expense_modal.dart';
 import 'package:pnyws/screens/home/graph_view.dart';
 import 'package:pnyws/screens/home/sliver_expense_list.dart';
-import 'package:pnyws/utils/money.dart';
+import 'package:pnyws/utils/utils.dart';
 import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
