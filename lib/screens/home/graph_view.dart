@@ -187,27 +187,25 @@ class RenderGraphBox extends RenderBox
       prevCenterTop = centerTop;
     }
 
+    final rect = offset & Size(size.width, size.height - kLabelHeight);
     context.canvas.drawPath(
-      Path()..addPath(path, Offset(-1, kStrokeWidth * 2)),
+      Path.from(path)..lineTo(points.last.dx, rect.height)..lineTo(points.first.dx, rect.height),
       Paint()
-        ..style = PaintingStyle.stroke
         ..strokeWidth = kStrokeWidth
-        ..color = Colors.black87
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, kStrokeWidth)
-        ..strokeCap = StrokeCap.round,
+        ..shader = ui.Gradient.linear(
+          rect.topCenter,
+          rect.bottomCenter,
+          [MkColors.secondaryAccent.withOpacity(.5), Color(0x00000000)],
+          [0.5, 1.0],
+        ),
     );
 
-    final rect = offset & size;
     context.canvas.drawPath(
       path,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = kStrokeWidth * animation.value
-        ..shader = ui.Gradient.linear(
-          rect.centerLeft,
-          rect.centerRight,
-          [MkColors.secondaryAccent, Colors.yellowAccent],
-        ),
+        ..color = MkColors.secondaryAccent,
     );
 
     for (var i = 0; i < points.length; i++) {
@@ -233,14 +231,17 @@ class RenderGraphBox extends RenderBox
         text: TextSpan(
           text: '${createdAt.day}.${createdAt.month}.${createdAt.year.toString().substring(2)}',
           style: TextStyle(
-            color: MkColors.primaryAccent.shade500,
+            color: MkColors.primaryAccent.shade300,
             fontSize: 8,
             fontWeight: MkStyle.semibold,
             shadows: [ui.Shadow(blurRadius: 2, offset: const Offset(0, 1))],
           ),
         ),
       )..layout(maxWidth: labelTextRect.size.width);
-      textPainter.paint(context.canvas, labelTextRect.centerLeft - Offset(0, textPainter.height / 2));
+      textPainter.paint(
+        context.canvas,
+        labelTextRect.center - Offset(textPainter.width / 2, textPainter.height / 2),
+      );
 
       const valueTextMargin = kStrokeWidth;
       final valueTextRect = Offset(point.dx - kBarWidth / 2, point.dy - kLabelHeight - valueTextMargin) &
@@ -252,14 +253,17 @@ class RenderGraphBox extends RenderBox
         text: TextSpan(
           text: Money(values[i].value).formatted,
           style: TextStyle(
-            color: MkColors.primaryAccent.shade700,
+            color: MkColors.primaryAccent.shade300,
             fontSize: 10,
             shadows: [ui.Shadow(blurRadius: 2, offset: const Offset(0, 1))],
             fontWeight: MkStyle.semibold,
           ),
         ),
       )..layout(maxWidth: valueTextRect.size.width);
-      labelTextPainter.paint(context.canvas, valueTextRect.centerLeft - Offset(0, labelTextPainter.height / 2));
+      labelTextPainter.paint(
+        context.canvas,
+        valueTextRect.center - Offset(labelTextPainter.width / 2, labelTextPainter.height / 2),
+      );
     }
   }
 }
