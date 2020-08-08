@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:faker/faker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_version/get_version.dart';
@@ -38,7 +41,25 @@ void main({
       }
     case Environment.MOCK:
     default:
-      repository = Repository(auth: AuthMockImpl(stateMachine: stateMachine), trip: TripMockImpl());
+      {
+        repository = Repository(
+          auth: AuthMockImpl(stateMachine: stateMachine),
+          trip: TripMockImpl(trips: [
+            TripData(
+              title: "Lagos Trip",
+              items: List.generate(
+                100,
+                (index) => ExpenseData(
+                  title: faker.food.cuisine(),
+                  value: Random().nextDouble() * 35000,
+                  createdAt: DateTime.now().subtract(Duration(days: 120)).add(Duration(days: index * 10)),
+                ),
+              ),
+              createdAt: DateTime.now().subtract(Duration(days: 120)),
+            ),
+          ]),
+        );
+      }
   }
 
   Registry().initialize(
