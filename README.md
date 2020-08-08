@@ -1,18 +1,30 @@
-# example
+<div align="center">
+  <strong style="font-size: 40px;display: block;margin-bottom: 16px;">Pnyws: Penny Wise</strong>
+  <strong>Just for tracking my expenses</strong>
+  <br />
+  <sub>Built with ❤︎ by <a href="https://twitter.com/jogboms">jogboms</a></sub>
+  <br /><br />
 
-![Format, Analyze and Test](https://github.com/jogboms/flutter_template/workflows/Format,%20Analyze%20and%20Test/badge.svg?branch=master)
+![Format, Analyze and Test](https://github.com/jogboms/pnyws/workflows/Format,%20Analyze%20and%20Test/badge.svg?branch=master) [![codecov](https://codecov.io/gh/jogboms/pnyws/branch/master/graph/badge.svg)](https://codecov.io/gh/jogboms/pnyws)
+</div>
 
-A new Flutter project.
+---
 
-## Getting Started
+<strong>Pnyws</strong> is what actually started out as a weekend vacation project for experimenting with [Canvas](https://api.flutter.dev/flutter/dart-ui/Canvas-class.html), [BoxScrollView](https://api.flutter.dev/flutter/widgets/BoxScrollView-class.html) and [RenderSliver](https://api.flutter.dev/flutter/rendering/RenderSliver-class.html). It turned out to be clean, easy on the eyes and overall has a very smooth feel. 
 
-This project is a starting point for a Flutter application.
+## Tools
 
-A few resources to get you started if this is your first Flutter project:
+- Firebase Auth
+- Firebase Cloud Firestore
+- Google SignIn
+- RxDart
+- Injector
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+For a full description of OSS used, see pubspec.yaml
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## How it looks
+
+![Pnyws](https://github.com/jogboms/pnyws/blob/master/showcase.gif)
+
+For help getting started with Flutter, view our online
+[documentation](https://flutter.io/).
