@@ -87,7 +87,7 @@ class _ContentState extends State<_Content> {
     try {
       setState(() => isLoading = true);
       // TODO: move this out of here
-      await Registry.di().repository.auth.signInWithGoogle();
+      await Registry.di().repository.auth.signIn();
     } catch (e) {
       // TODO: move this out of here
       final message = MkStrings.genericError(e);

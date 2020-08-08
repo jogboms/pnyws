@@ -10,7 +10,7 @@ class AuthImpl extends AuthRepository {
   final Firebase firebase;
 
   @override
-  Future<void> signInWithGoogle() => firebase.auth.signInWithGoogle();
+  Future<void> signIn() => firebase.auth.signInWithGoogle();
 
   @override
   Stream<String> get onAuthStateChangedInternal => firebase.auth.onAuthStateChanged.map((convert) => convert.uuid);

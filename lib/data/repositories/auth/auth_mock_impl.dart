@@ -19,7 +19,7 @@ class AuthMockImpl extends AuthRepository {
   }
 
   @override
-  Future<void> signInWithGoogle() async {}
+  Future<void> signIn() async {}
 
   @override
   Future<void> signOut() async {}

@@ -8,11 +8,12 @@ abstract class AuthRepository {
 
   final StateMachine stateMachine;
 
-  Future<void> signInWithGoogle();
+  Future<void> signIn();
 
   Stream<String> get onAuthStateChanged => onAuthStateChangedInternal
       .doOnData((uuid) => stateMachine.add((state) => state.copyWith(account: AccountData(uuid: uuid))));
 
+  @protected
   Stream<String> get onAuthStateChangedInternal;
 
   Future<void> signOut();

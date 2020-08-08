@@ -34,6 +34,9 @@ void main() {
       when(authRepository.getAccount("1")).thenAnswer((_) async* {
         await completer.future;
       });
+      when(authRepository.onAuthStateChanged).thenAnswer((_) async* {
+        yield "1";
+      });
 
       const registry = Registry();
       final session = Session(environment: Environment.MOCK);
