@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:pnyws/data/data.dart';
+import 'package:pnyws/state/state_machine.dart';
 
 import './auth_repository.dart';
 
-class AuthMockImpl implements AuthRepository {
+class AuthMockImpl extends AuthRepository {
+  AuthMockImpl({@required StateMachine stateMachine}) : super(stateMachine: stateMachine);
+
   @override
   Stream<AccountData> getAccount(String uuid) async* {
     await Future<void>.delayed(const Duration(seconds: 0));
@@ -10,7 +14,7 @@ class AuthMockImpl implements AuthRepository {
   }
 
   @override
-  Stream<String> get onAuthStateChanged async* {
+  Stream<String> get onAuthStateChangedInternal async* {
     yield "1";
   }
 

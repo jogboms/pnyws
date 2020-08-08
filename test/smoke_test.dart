@@ -9,7 +9,6 @@ import 'package:pnyws/environments/environment.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/splash/splash_page.dart';
 import 'package:pnyws/services/services.dart';
-import 'package:pnyws/state/state_machine.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
@@ -40,9 +39,8 @@ void main() {
       final session = Session(environment: Environment.MOCK);
       final navigatorKey = GlobalKey<NavigatorState>();
       final sharedPrefs = SharedPrefs(MockSharedPreferences());
-      final stateMachine = StateMachine();
       final repository = Repository(auth: authRepository, trip: MockTripRepository());
-      registry.initialize(repository, session, navigatorKey, "1.0.0", sharedPrefs, stateMachine);
+      registry.initialize(repository, session, navigatorKey, "1.0.0", sharedPrefs);
 
       await tester.pumpWidget(App(
         navigatorKey: navigatorKey,

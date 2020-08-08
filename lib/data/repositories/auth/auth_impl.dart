@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:pnyws/data/data.dart';
+import 'package:pnyws/state/state_machine.dart';
 
 import './auth_repository.dart';
 
-class AuthImpl implements AuthRepository {
-  AuthImpl({@required this.firebase});
+class AuthImpl extends AuthRepository {
+  AuthImpl({@required this.firebase, @required StateMachine stateMachine}) : super(stateMachine: stateMachine);
 
   final Firebase firebase;
 
@@ -12,7 +13,7 @@ class AuthImpl implements AuthRepository {
   Future<void> signInWithGoogle() => firebase.auth.signInWithGoogle();
 
   @override
-  Stream<String> get onAuthStateChanged => firebase.auth.onAuthStateChanged.map((convert) => convert.uuid);
+  Stream<String> get onAuthStateChangedInternal => firebase.auth.onAuthStateChanged.map((convert) => convert.uuid);
 
   @override
   Future<void> signOut() => firebase.auth.signOutWithGoogle();

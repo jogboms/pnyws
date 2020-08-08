@@ -31,14 +31,14 @@ void main({
       {
         final firebase = await Firebase.initialize();
         repository = Repository(
-          auth: AuthImpl(firebase: firebase),
+          auth: AuthImpl(firebase: firebase, stateMachine: stateMachine),
           trip: TripImpl(firebase: firebase, pref: sharedPrefs, stateMachine: stateMachine),
         );
         break;
       }
     case Environment.MOCK:
     default:
-      repository = Repository(auth: AuthMockImpl(), trip: TripMockImpl());
+      repository = Repository(auth: AuthMockImpl(stateMachine: stateMachine), trip: TripMockImpl());
   }
 
   Registry().initialize(
@@ -47,7 +47,6 @@ void main({
     navigatorKey,
     await GetVersion.projectVersion,
     sharedPrefs,
-    stateMachine,
   );
 
   runApp(App(
