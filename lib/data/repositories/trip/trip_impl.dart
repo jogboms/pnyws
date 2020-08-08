@@ -74,10 +74,7 @@ class TripImpl extends TripRepository {
   void addNewTrip(TripData trip) {
     StreamSubscription<AccountData> sub;
     sub = account.listen((_account) async {
-      final data = trip.toMap()
-        ..addAll(<String, dynamic>{
-          "accountID": _account.uuid,
-        });
+      final data = trip.toMap()..addAll(<String, String>{"accountID": _account.uuid});
 
       await firebase.db.trips.fetchOne(trip.uuid).set(data);
       setActiveTrip(trip);
@@ -89,11 +86,7 @@ class TripImpl extends TripRepository {
   void addExpenseToTrip(TripData trip, ExpenseData expense) {
     StreamSubscription<AccountData> sub;
     sub = account.listen((_account) async {
-      final data = expense.toMap()
-        ..addAll(<String, dynamic>{
-          "tripID": trip.uuid,
-          "accountID": _account.uuid,
-        });
+      final data = expense.toMap()..addAll(<String, String>{"tripID": trip.uuid, "accountID": _account.uuid});
       await firebase.db.expenses.fetchOne(expense.uuid).set(data);
       await sub.cancel();
     });
@@ -140,37 +133,14 @@ class TripImpl extends TripRepository {
 }
 
 final memoizedExpensesFn = memo1<List<DocumentSnapshot>, Map<String, List<ExpenseData>>>(
-  (documents) => groupBy<ExpenseData>(
+  (documents) => groupBy<DocumentSnapshot, ExpenseData>(
     documents,
-    (dynamic item) => item["tripID"],
-    (dynamic item) {
-      final s = FireSnapshot(item);
-      final json = s.data;
-      return ExpenseData(
-        uuid: json["uuid"],
-        title: json["title"],
-        value: json["value"] ?? 0.0,
-        tripID: json["tripID"],
-        description: json["description"],
-        accountID: json["accountID"],
-        createdAt: parseDateTime(json["createdAt"]),
-      );
-    },
+    (item) => item.get("tripID"),
+    (item) => ExpenseData.fromMap(FireSnapshot(item).data),
   ),
 );
 
 final memoizedTripsFn = memo2<List<DocumentSnapshot>, Map<String, List<ExpenseData>>, List<TripData>>(
-  (documents, expensesMap) => documents.map((item) {
-    final s = FireSnapshot(item);
-    final json = s.data;
-    return TripData(
-      uuid: json["uuid"],
-      title: json["title"],
-      description: json["description"],
-      accountID: json["accountID"],
-      createdAt: parseDateTime(json["createdAt"]),
-      items: (expensesMap[json["uuid"]] ?? [])..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
-    );
-  }).toList()
+  (documents, expensesMap) => documents.map((item) => TripData.fromMap(FireSnapshot(item).data, expensesMap)).toList()
     ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
 );

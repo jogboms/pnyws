@@ -14,6 +14,18 @@ class ExpenseData {
   })  : uuid = uuid ?? Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
+  factory ExpenseData.fromMap(Map<String, dynamic> map) {
+    return ExpenseData(
+      uuid: map["uuid"],
+      title: map["title"],
+      value: map["value"] ?? 0.0,
+      tripID: map["tripID"],
+      description: map["description"],
+      accountID: map["accountID"],
+      createdAt: parseDateTime(map["createdAt"]),
+    );
+  }
+
   final String uuid;
   final String title;
   final String tripID;

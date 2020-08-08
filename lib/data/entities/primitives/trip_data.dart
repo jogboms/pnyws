@@ -15,6 +15,17 @@ class TripData {
   })  : uuid = uuid ?? Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
+  factory TripData.fromMap(Map<String, dynamic> map, Map<String, List<ExpenseData>> expenses) {
+    return TripData(
+      uuid: map["uuid"],
+      title: map["title"],
+      description: map["description"],
+      accountID: map["accountID"],
+      createdAt: parseDateTime(map["createdAt"]),
+      items: (expenses[map["uuid"]] ?? [])..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
+    );
+  }
+
   final String uuid;
   final String title;
   final String description;
