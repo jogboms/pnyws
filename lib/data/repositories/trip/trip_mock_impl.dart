@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:pnyws/data/data.dart';
 import 'package:rxdart/rxdart.dart';
@@ -7,22 +6,8 @@ import 'package:rxdart/rxdart.dart';
 import './trip_repository.dart';
 
 class TripMockImpl extends TripRepository {
-  TripMockImpl() {
-    final trips = [
-      TripData(
-        title: "Lagos Trip",
-        items: List.generate(
-          2,
-          (index) => ExpenseData(
-            title: "${index + 2} Bottles of Coke",
-            value: Random().nextDouble() * 350,
-            createdAt: DateTime.now().subtract(Duration(days: 120)).add(Duration(days: index * 10)),
-          ),
-        ),
-        createdAt: DateTime.now().subtract(Duration(days: 120)),
-      ),
-    ];
-    _tripsController.add(trips);
+  TripMockImpl({List<TripData> trips}) {
+    _tripsController.add(trips ?? []);
 
     _activeTripController.add(trips.last);
   }
