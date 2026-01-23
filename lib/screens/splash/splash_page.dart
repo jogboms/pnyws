@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pnyws/constants/mk_strings.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
@@ -88,14 +87,6 @@ class _ContentState extends State<_Content> {
       await Registry.di().repository.auth.signIn();
     } catch (e) {
       // TODO(jogboms): move this out of here
-      final message = MkStrings.genericError(e);
-
-      if (message.isNotEmpty) {
-        print(message);
-        //        SnackBarProvider.of(context).show(message, duration: const Duration(milliseconds: 3500));
-      }
-
-      // TODO(jogboms): move this out of here
       await Registry.di().repository.auth.signOut();
 
       if (!mounted) {
@@ -103,9 +94,6 @@ class _ContentState extends State<_Content> {
       }
 
       setState(() => _isLoading = false);
-
-      print(e);
-      //      SnackBarProvider.of(context).show(e.toString());
     }
   }
 }
