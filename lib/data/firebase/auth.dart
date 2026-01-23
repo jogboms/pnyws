@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:pnyws/data/network/firebase/models.dart';
-import 'package:pnyws/wrappers/mk_exceptions.dart';
+import 'package:pnyws/data/entities/exceptions.dart';
+import 'package:pnyws/data/firebase/models.dart';
 
 class Auth {
   Auth(this._auth, this._googleSignIn);

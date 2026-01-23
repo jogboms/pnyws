@@ -17,9 +17,10 @@ class TripImpl extends TripRepository {
     required this.stateMachine,
     required this.pref,
   }) {
-    account
+    _account = stateMachine.stream.map((state) => state.account).whereNotNull().shareValue();
+    _account
         .switchMap(
-          (account) => CombineLatestStream<QuerySnapshot, List<TripData>>(
+          (account) => CombineLatestStream(
             [
               firebase.db.trips.fetchAll(account.uuid).snapshots().distinct(),
               firebase.db.expenses.fetchAll(account.uuid).snapshots().distinct(),
@@ -40,7 +41,7 @@ class TripImpl extends TripRepository {
   final _activeTripController = BehaviorSubject<String>();
   final _tripsController = BehaviorSubject<List<TripData>>();
 
-  Stream<AccountData> get account => stateMachine.stream.map((state) => state.account).whereNotNull();
+  late final ValueStream<AccountData> _account;
 
   @override
   Stream<TripData?> getActiveTrip() => CombineLatestStream.combine2(
@@ -59,48 +60,39 @@ class TripImpl extends TripRepository {
   }
 
   @override
-  void addNewTrip(TripData trip) {
-    StreamSubscription<AccountData>? sub;
-    sub = account.listen((account) async {
-      final data = trip.toMap()..addAll(<String, String>{'accountID': account.uuid});
-
+  void addNewTrip(TripData trip) async {
+    if (_account.valueOrNull case final account?) {
+      final data = trip.toMap()..addAll({_Keys.accountId: account.uuid});
       await firebase.db.trips.fetchOne(trip.uuid).set(data);
       setActiveTrip(trip);
-      await sub?.cancel();
-    });
+    }
   }
 
   @override
-  void addExpenseToTrip(TripData trip, ExpenseData expense) {
-    StreamSubscription<AccountData>? sub;
-    sub = account.listen((account) async {
-      final data = expense.toMap()..addAll(<String, String>{'tripID': trip.uuid, 'accountID': account.uuid});
+  void addExpenseToTrip(TripData trip, ExpenseData expense) async {
+    if (_account.valueOrNull case final account?) {
+      final data = expense.toMap()..addAll({_Keys.tripId: trip.uuid, _Keys.accountId: account.uuid});
       await firebase.db.expenses.fetchOne(expense.uuid).set(data);
-      await sub?.cancel();
-    });
+    }
   }
 
   @override
-  void removeExpenseFromTrip(TripData trip, ExpenseData expense) {
-    StreamSubscription<AccountData>? sub;
-    sub = account.listen((account) async {
+  void removeExpenseFromTrip(TripData trip, ExpenseData expense) async {
+    if (_account.valueOrNull != null) {
       await firebase.db.expenses.fetchOne(expense.uuid).delete();
-      await sub?.cancel();
-    });
+    }
   }
 
   @override
-  void removeTrip(TripData trip) {
-    StreamSubscription<AccountData>? sub;
-    sub = account.listen((account) async {
+  void removeTrip(TripData trip) async {
+    if (_account.valueOrNull != null) {
       await firebase.db.trips.fetchOne(trip.uuid).delete();
       final snapshot = await firebase.db.expenses.fetchByTrip(trip.uuid).get();
 
       for (final DocumentSnapshot ds in snapshot.docs) {
         await ds.reference.delete();
       }
-      await sub?.cancel();
-    });
+    }
     _resetPersistedUuid();
   }
 
@@ -111,11 +103,16 @@ class TripImpl extends TripRepository {
   void _resetPersistedUuid() => pref.remove(_activeItemKey);
 }
 
+final class _Keys {
+  static const tripId = 'tripID';
+  static const accountId = 'accountID';
+}
+
 final _memoizedExpensesFn = memo1<List<DocumentSnapshot>, Map<String, List<ExpenseData>>>(
   (documents) => groupBy<DocumentSnapshot, ExpenseData>(
     documents,
-    (item) => item.get('tripID') as String,
-    (item) => ExpenseData.fromMap(FireSnapshot(item).data),
+    (item) => item.get(_Keys.tripId) as String,
+    (item) => .fromMap(FireSnapshot(item).data),
   ),
 );
 

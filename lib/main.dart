@@ -35,7 +35,7 @@ void main({
         auth: AuthImpl(firebase: firebase, stateMachine: stateMachine),
         trip: TripImpl(firebase: firebase, pref: sharedPrefs, stateMachine: stateMachine),
       );
-      break;
+
     case .mock:
       repository = Repository(
         auth: AuthMockImpl(stateMachine: stateMachine),

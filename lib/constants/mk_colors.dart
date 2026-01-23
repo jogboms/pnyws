@@ -52,8 +52,4 @@ class MkColors {
   static const primary = Color(_basePrimary);
   static const secondary = Color(_baseSecondary);
   static const lightGrey = Color(0xFF9B9B9B);
-  static const success = Color(0xFF7ED321);
-  static const danger = Color(0xFFEB5757);
-  static const info = Color(0xFF2D9CDB);
-  static const warning = Color(0xFFF1B61E);
 }

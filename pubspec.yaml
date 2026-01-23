@@ -13,7 +13,7 @@ dependencies:
   equatable: ^2.0.8
   faker: ^2.2.0
   firebase_auth: ^6.1.4
-  firebase_core: any
+  firebase_core: ^4.4.0
   flutter:
     sdk: flutter
   flutter_scale_aware:

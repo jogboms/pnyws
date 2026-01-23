@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:pnyws/constants/mk_colors.dart';
-import 'package:pnyws/constants/mk_style.dart';
 import 'package:pnyws/data/data.dart';
 import 'package:pnyws/screens/home/interpolate.dart';
 import 'package:pnyws/utils/utils.dart';
@@ -16,7 +15,11 @@ const kTrackHeight = 32.0;
 const kStrokeWidth = 4.0;
 
 class GraphView extends BoxScrollView {
-  const GraphView({super.key, required this.values, required this.animation}) : super(scrollDirection: .horizontal);
+  const GraphView({
+    super.key,
+    required this.values,
+    required this.animation,
+  }) : super(scrollDirection: .horizontal);
 
   final List<ExpenseData> values;
   final Animation<double> animation;
@@ -40,53 +43,31 @@ class GraphWidget extends LeafRenderObjectWidget {
   void updateRenderObject(BuildContext context, RenderGraphBox renderObject) => renderObject.values = values;
 }
 
-class GraphParentData extends ContainerBoxParentData<GraphItemBar> {}
+class GraphParentData extends ContainerBoxParentData<_GraphItemBar> {}
 
 class RenderGraphBox extends RenderBox
     with
-        ContainerRenderObjectMixin<GraphItemBar, GraphParentData>,
-        RenderBoxContainerDefaultsMixin<GraphItemBar, GraphParentData> {
+        ContainerRenderObjectMixin<_GraphItemBar, GraphParentData>,
+        RenderBoxContainerDefaultsMixin<_GraphItemBar, GraphParentData> {
   RenderGraphBox({required List<ExpenseData> values, required this.animation}) {
-    _values = normalizeValues(values);
-    addChildren(_values);
+    _values = _normalizeValues(values);
+    _addChildren(_values);
   }
 
   Animation<double> animation;
 
+  List<ExpenseData> get values => _values;
   late List<ExpenseData> _values;
 
-  List<ExpenseData> get values => _values;
-
   set values(List<ExpenseData> values) {
-    final normalized = normalizeValues(values);
+    final normalized = _normalizeValues(values);
     if (_values == normalized) {
       return;
     }
     _values = normalized;
     removeAll();
-    addChildren(_values);
+    _addChildren(_values);
     markNeedsLayout();
-  }
-
-  List<ExpenseData> normalizeValues(List<ExpenseData> values) => groupReduceBy<ExpenseData>(
-    values,
-    (item) => item.createdAt.day.toString(),
-    (a, b) => ExpenseData(title: '', value: a.value + b.value, createdAt: b.createdAt),
-  );
-
-  List<T> groupReduceBy<T extends ExpenseData>(List<T> list, String Function(T) fn, T Function(T a, T b) reducer) =>
-      list
-          .fold<Map<String, List<T>>>(<String, List<T>>{}, (rv, T x) {
-            final key = fn(x);
-            (rv[key] = rv[key] ?? <T>[]).add(x);
-            return rv;
-          })
-          .map<String, T>((key, values) => MapEntry(key, values.reduce(reducer)))
-          .values
-          .toList();
-
-  void addChildren(List<ExpenseData> values) {
-    addAll(values.map((item) => GraphItemBar(value: item.value)).toList());
   }
 
   @override
@@ -207,7 +188,10 @@ class RenderGraphBox extends RenderBox
 
       const labelTextMargin = kStrokeWidth * 2;
       final labelTextRect =
-          Offset(point.dx - kBarWidth / 2, constraints.maxHeight + labelTextMargin - kTrackHeight) &
+          Offset(
+            point.dx - kBarWidth / 2,
+            constraints.maxHeight + labelTextMargin - kTrackHeight,
+          ) &
           const Size(kBarWidth, kTrackHeight - labelTextMargin);
       final createdAt = values[i].createdAt;
       final textPainter = TextPainter(
@@ -219,7 +203,7 @@ class RenderGraphBox extends RenderBox
           style: TextStyle(
             color: MkColors.primaryAccent.shade300,
             fontSize: 8,
-            fontWeight: MkStyle.semibold,
+            fontWeight: .w600,
             shadows: const [ui.Shadow(blurRadius: 2, offset: Offset(0, 1))],
           ),
         ),
@@ -228,7 +212,10 @@ class RenderGraphBox extends RenderBox
 
       const valueTextMargin = kStrokeWidth;
       final valueTextRect =
-          Offset(point.dx - kBarWidth / 2, point.dy - kLabelHeight - valueTextMargin) &
+          Offset(
+            point.dx - kBarWidth / 2,
+            point.dy - kLabelHeight - valueTextMargin,
+          ) &
           const Size(kBarWidth, kLabelHeight - valueTextMargin);
       final labelTextPainter = TextPainter(
         textDirection: .ltr,
@@ -240,7 +227,7 @@ class RenderGraphBox extends RenderBox
             color: MkColors.primaryAccent.shade300,
             fontSize: 10,
             shadows: const [ui.Shadow(blurRadius: 2, offset: Offset(0, 1))],
-            fontWeight: MkStyle.semibold,
+            fontWeight: .w600,
           ),
         ),
       )..layout(maxWidth: valueTextRect.size.width);
@@ -250,14 +237,32 @@ class RenderGraphBox extends RenderBox
       );
     }
   }
+
+  List<ExpenseData> _normalizeValues(List<ExpenseData> values) => _groupReduceBy(
+    values,
+    (item) => item.createdAt.day.toString(),
+    (a, b) => ExpenseData(title: '', value: a.value + b.value, createdAt: b.createdAt),
+  );
+
+  List<T> _groupReduceBy<T>(
+    List<T> list,
+    String Function(T) fn,
+    T Function(T a, T b) reducer,
+  ) => list
+      .fold(<String, List<T>>{}, (rv, T x) => rv..putIfAbsent(fn(x), () => <T>[]).add(x))
+      .map((key, values) => MapEntry(key, values.reduce(reducer)))
+      .values
+      .toList();
+
+  void _addChildren(List<ExpenseData> values) =>
+      addAll(values.map((item) => _GraphItemBar(value: item.value)).toList());
 }
 
-class GraphItemBar extends RenderBox {
-  GraphItemBar({required double value}) : _value = value;
-
-  double _value;
+class _GraphItemBar extends RenderBox {
+  _GraphItemBar({required double value}) : _value = value;
 
   double get value => _value;
+  double _value;
 
   set value(double value) {
     _value = value;
@@ -268,11 +273,8 @@ class GraphItemBar extends RenderBox {
   bool hitTestSelf(Offset position) => true;
 
   @override
-  void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
-    if (event is PointerDownEvent) {
-      print(value);
-    }
-  }
+  ui.Size computeDryLayout(covariant BoxConstraints constraints) =>
+      Size(kBarWidth - kBarSpacing, constraints.maxHeight);
 
   @override
   bool get sizedByParent => true;

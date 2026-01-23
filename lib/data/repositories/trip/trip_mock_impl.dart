@@ -6,7 +6,6 @@ import 'package:rxdart/rxdart.dart';
 class TripMockImpl extends TripRepository {
   TripMockImpl({required List<TripData> trips}) {
     _tripsController.add(trips);
-
     _activeTripController.add(trips.last);
   }
 
@@ -33,7 +32,7 @@ class TripMockImpl extends TripRepository {
   @override
   void addExpenseToTrip(TripData trip, ExpenseData expense) {
     final newTrip = trip.copyWith(items: [...trip.items, expense]);
-    _tripsController.add(modifyTripFromList(_tripsController.value, newTrip));
+    _tripsController.add(_modifyTripFromList(_tripsController.value, newTrip));
     _activeTripController.add(newTrip);
   }
 
@@ -42,20 +41,23 @@ class TripMockImpl extends TripRepository {
     final newTrip = trip.copyWith(
       items: trip.items.where((expense) => expense.uuid != expense.uuid).toList(),
     );
-    _tripsController.add(modifyTripFromList(_tripsController.value, newTrip));
+    _tripsController.add(_modifyTripFromList(_tripsController.value, newTrip));
     _activeTripController.add(newTrip);
   }
 
   @override
   void removeTrip(TripData trip) {
-    _tripsController.add(removeTripFromList(_tripsController.value, trip));
+    _tripsController.add(_removeTripFromList(_tripsController.value, trip));
     if (_activeTripController.value == trip) {
       _activeTripController.add(null);
     }
   }
 
-  List<TripData> modifyTripFromList(List<TripData> trips, TripData trip) => [...removeTripFromList(trips, trip), trip];
+  List<TripData> _modifyTripFromList(List<TripData> trips, TripData trip) => [
+    ..._removeTripFromList(trips, trip),
+    trip,
+  ];
 
-  List<TripData> removeTripFromList(List<TripData> trips, TripData trip) =>
+  List<TripData> _removeTripFromList(List<TripData> trips, TripData trip) =>
       trips.where((trip) => trip.uuid != trip.uuid).toList();
 }

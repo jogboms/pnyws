@@ -1,11 +1,8 @@
-import 'package:pnyws/data/repositories/auth/auth.dart';
-import 'package:pnyws/data/repositories/trip/trip.dart';
+import 'package:pnyws/data/repositories/auth/auth_repository.dart';
+import 'package:pnyws/data/repositories/trip/trip_repository.dart';
 
-class Repository {
-  Repository({
-    required this.auth,
-    required this.trip,
-  });
+final class Repository {
+  const Repository({required this.auth, required this.trip});
 
   final AuthRepository auth;
   final TripRepository trip;

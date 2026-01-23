@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:pnyws/data/entities/primitives/expense_data.dart';
+import 'package:pnyws/data/entities/expense_data.dart';
 import 'package:pnyws/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 

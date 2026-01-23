@@ -71,6 +71,7 @@ class _CreateExpenseModalState extends State<CreateExpenseModal> {
             const ScaledBox.vertical(16),
             DateFormField(
               controller: _createAtTextController,
+              initialValue: DateTime.now(),
               decoration: const InputDecoration(hintText: 'Entry date'),
               textAlign: .center,
             ),

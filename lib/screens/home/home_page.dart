@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_scale_aware/flutter_scale_aware.dart';
 import 'package:intl/intl.dart';
 import 'package:pnyws/constants/mk_colors.dart';
-import 'package:pnyws/constants/mk_style.dart';
 import 'package:pnyws/data/data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/home/create_expense_modal.dart';
