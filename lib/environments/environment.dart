@@ -1,9 +1,9 @@
-enum Environment { MOCK, DEVELOPMENT, PRODUCTION }
+enum Environment { mock, dev, prod }
 
 extension EnvironmentX on Environment {
-  bool get isMock => this == Environment.MOCK;
+  bool get isMock => this == Environment.mock;
 
-  bool get isDev => this == Environment.DEVELOPMENT;
+  bool get isDev => this == Environment.dev;
 
-  bool get isProduction => this == Environment.PRODUCTION;
+  bool get isProduction => this == Environment.prod;
 }

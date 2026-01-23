@@ -1,16 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
 
-class AccountData {
-  AccountData({@required this.uuid});
+class AccountData with EquatableMixin {
+  AccountData({required this.uuid});
 
   final String uuid;
 
-  Map<String, String> toMap() {
-    return <String, String>{"uuid": uuid};
-  }
-
   @override
-  String toString() {
-    return "{uuid: $uuid}";
-  }
+  List<Object?> get props => [uuid];
+
+  Map<String, String> toMap() => {'uuid': uuid};
 }

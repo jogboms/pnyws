@@ -3,24 +3,19 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_scale_aware/flutter_scale_aware.dart';
 
 class ScaledBox extends StatelessWidget {
-  const ScaledBox({Key key, this.width = 0, this.height = 0, this.child}) : super(key: key);
+  const ScaledBox({super.key, this.width = 0, this.height = 0, this.child});
 
-  const ScaledBox.vertical(this.height)
-      : width = 0,
-        child = null;
+  const ScaledBox.vertical(this.height, {super.key}) : width = 0, child = null;
 
-  const ScaledBox.horizontal(this.width)
-      : height = 0,
-        child = null;
+  const ScaledBox.horizontal(this.width, {super.key}) : height = 0, child = null;
 
   final double width;
   final double height;
-  final Widget child;
+  final Widget? child;
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(width: context.scale(width), height: context.scaleY(height), child: child);
-  }
+  Widget build(BuildContext context) =>
+      SizedBox(width: context.scale(width), height: context.scaleY(height), child: child);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

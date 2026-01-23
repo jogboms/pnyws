@@ -8,11 +8,7 @@ import 'package:pnyws/widgets/scaled_box.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
 class ExpenseListItem extends StatelessWidget {
-  const ExpenseListItem({
-    Key key,
-    @required this.item,
-    @required this.onDeleteAction,
-  }) : super(key: key);
+  const ExpenseListItem({super.key, required this.item, required this.onDeleteAction});
 
   final ExpenseData item;
   final ValueChanged<ExpenseData> onDeleteAction;
@@ -23,49 +19,42 @@ class ExpenseListItem extends StatelessWidget {
     final createdAt = item.createdAt;
 
     return Slidable(
-      actionPane: SlidableDrawerActionPane(),
-      actionExtentRatio: 0.25,
+      endActionPane: ActionPane(
+        motion: const DrawerMotion(),
+        extentRatio: 0.25,
+        children: [
+          SlidableAction(
+            label: 'Delete',
+            backgroundColor: Colors.red,
+            icon: Icons.delete,
+            onPressed: (_) => onDeleteAction(item),
+          ),
+        ],
+      ),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        margin: EdgeInsets.symmetric(vertical: .125),
-        color: MkColors.primaryAccent.shade500.withOpacity(.025),
+        padding: const .symmetric(vertical: 16, horizontal: 16),
+        margin: const .symmetric(vertical: .125),
+        color: MkColors.primaryAccent.shade500.withValues(alpha: .025),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Text(
-                    item.title,
-                    style: theme.subhead3Semi.copyWith(letterSpacing: 0.125),
-                  ),
+                crossAxisAlignment: .stretch,
+                children: [
+                  Text(item.title, style: theme.subhead3Semi.copyWith(letterSpacing: 0.125)),
                   const ScaledBox.vertical(4),
                   Text(
                     '${createdAt.day}.${createdAt.month}.${createdAt.year.toString().substring(2)}',
-                    style: theme.body1.copyWith(
-                      letterSpacing: 0.125,
-                      color: kTextBaseColor.withOpacity(.75),
-                    ),
+                    style: theme.body1.copyWith(letterSpacing: 0.125, color: kTextBaseColor.withValues(alpha: .75)),
                   ),
                 ],
               ),
             ),
-            Text(
-              Money(item.value).formatted,
-              style: theme.subhead1Bold.copyWith(letterSpacing: 1.05),
-            ),
+            Text(Money(item.value).formatted, style: theme.subhead1Bold.copyWith(letterSpacing: 1.05)),
           ],
         ),
       ),
-      secondaryActions: <Widget>[
-        IconSlideAction(
-          caption: 'Delete',
-          color: Colors.red,
-          icon: Icons.delete,
-          onTap: () => onDeleteAction(item),
-        ),
-      ],
     );
   }
 }

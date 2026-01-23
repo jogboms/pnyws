@@ -1,3 +1,3 @@
 class MkFonts {
-  static const String base = "SF Pro Display";
+  static const base = 'SF Pro Display';
 }

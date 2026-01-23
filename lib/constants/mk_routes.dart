@@ -1,3 +1,3 @@
 class MkRoutes {
-  static const String start = '/start';
+  static const start = '/start';
 }

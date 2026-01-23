@@ -14,14 +14,14 @@ import 'package:pnyws/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main({
-  Environment environment = Environment.MOCK,
+  Environment environment = .mock,
   int delay = 0,
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
   await Future<dynamic>.delayed(Duration(seconds: delay));
 
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+  await SystemChrome.setPreferredOrientations([.portraitUp]);
+  SystemChrome.setSystemUIOverlayStyle(.dark);
 
   final navigatorKey = GlobalKey<NavigatorState>();
   final sharedPrefs = SharedPrefs(await SharedPreferences.getInstance());
@@ -29,40 +29,36 @@ void main({
 
   Repository repository;
   switch (environment) {
-    case Environment.DEVELOPMENT:
-    case Environment.PRODUCTION:
-      {
-        final firebase = await Firebase.initialize();
-        repository = Repository(
-          auth: AuthImpl(firebase: firebase, stateMachine: stateMachine),
-          trip: TripImpl(firebase: firebase, pref: sharedPrefs, stateMachine: stateMachine),
-        );
-        break;
-      }
-    case Environment.MOCK:
-    default:
-      {
-        repository = Repository(
-          auth: AuthMockImpl(stateMachine: stateMachine),
-          trip: TripMockImpl(trips: [
+    case .dev || .prod:
+      final firebase = await Firebase.initialize();
+      repository = Repository(
+        auth: AuthImpl(firebase: firebase, stateMachine: stateMachine),
+        trip: TripImpl(firebase: firebase, pref: sharedPrefs, stateMachine: stateMachine),
+      );
+      break;
+    case .mock:
+      repository = Repository(
+        auth: AuthMockImpl(stateMachine: stateMachine),
+        trip: TripMockImpl(
+          trips: [
             TripData(
-              title: "Lagos Trip",
+              title: 'Lagos Trip',
               items: List.generate(
                 100,
                 (index) => ExpenseData(
                   title: faker.food.cuisine(),
                   value: Random().nextDouble() * 35000,
-                  createdAt: DateTime.now().subtract(Duration(days: 120)).add(Duration(days: index * 10)),
+                  createdAt: DateTime.now().subtract(const Duration(days: 120)).add(Duration(days: index * 10)),
                 ),
               ),
-              createdAt: DateTime.now().subtract(Duration(days: 120)),
+              createdAt: DateTime.now().subtract(const Duration(days: 120)),
             ),
-          ]),
-        );
-      }
+          ],
+        ),
+      );
   }
 
-  Registry().initialize(
+  const Registry().initialize(
     repository,
     Session(environment: environment),
     navigatorKey,
@@ -70,8 +66,10 @@ void main({
     sharedPrefs,
   );
 
-  runApp(App(
-    navigatorKey: navigatorKey,
-    isFirstTime: MkFirstTimeLoginCheck.check(sharedPrefs, environment),
-  ));
+  runApp(
+    App(
+      navigatorKey: navigatorKey,
+      isFirstTime: MkFirstTimeLoginCheck.check(sharedPrefs, environment),
+    ),
+  );
 }

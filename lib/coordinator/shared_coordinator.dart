@@ -9,22 +9,22 @@ import 'package:pnyws/wrappers/mk_navigate.dart';
 
 @immutable
 class SharedCoordinator extends CoordinatorBase {
-  const SharedCoordinator(GlobalKey<NavigatorState> navigatorKey) : super(navigatorKey);
+  const SharedCoordinator(super.navigatorKey);
 
-  void toDashboard({TripData selectedTrip}) {
+  void toDashboard({TripData? selectedTrip}) {
     navigator?.push<void>(MkNavigate.fadeIn(DashboardPage(selectedTrip: selectedTrip), fullscreenDialog: true));
   }
 
   void toHome() {
     navigator?.pushAndRemoveUntil(
-      MkNavigate.fadeIn(HomePage(), name: MkRoutes.start),
+      MkNavigate.fadeIn(const HomePage(), name: MkRoutes.start),
       (Route<void> route) => false,
     );
   }
 
   void toSplash() {
     navigator?.pushAndRemoveUntil(
-      MkNavigate.fadeIn(SplashPage(), name: MkRoutes.start),
+      MkNavigate.fadeIn(const SplashPage(), name: MkRoutes.start),
       (Route<void> route) => false,
     );
   }

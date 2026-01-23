@@ -4,25 +4,25 @@ import 'package:pnyws/widgets/theme_provider.dart';
 
 class FakeTextFormField<T> extends StatefulWidget {
   const FakeTextFormField({
-    Key key,
-    @required this.onTap,
+    super.key,
+    required this.onTap,
     this.initialValue,
     this.child,
     this.decoration = const InputDecoration(),
-    this.autovalidate = false,
+    this.autovalidateMode = .disabled,
     this.onSaved,
     this.textAlign,
     this.validator,
-  }) : super(key: key);
+  });
 
-  final FormFieldSetter<T> onSaved;
-  final FormFieldValidator<T> validator;
-  final ValueChanged<FormFieldState<T>> onTap;
-  final T initialValue;
-  final Widget child;
-  final TextAlign textAlign;
+  final FormFieldSetter<T>? onSaved;
+  final FormFieldValidator<T>? validator;
+  final ValueChanged<FormFieldState<T>>? onTap;
+  final T? initialValue;
+  final Widget? child;
+  final TextAlign? textAlign;
   final InputDecoration decoration;
-  final bool autovalidate;
+  final AutovalidateMode autovalidateMode;
 
   @override
   FakeTextFormFieldState<T> createState() => FakeTextFormFieldState<T>();
@@ -32,35 +32,31 @@ class FakeTextFormFieldState<T> extends State<FakeTextFormField<T>> with Dismiss
   bool get isEnabled => widget.onTap != null;
 
   @override
-  Widget build(BuildContext context) {
-    return FormField<T>(
-      initialValue: widget.initialValue != null ? widget.initialValue : null,
-      autovalidate: widget.autovalidate,
-      builder: (FormFieldState<T> field) => InkWell(
-        onTap: isEnabled ? _onTap(field) : null,
-        child: InputDecorator(
+  Widget build(BuildContext context) => FormField<T>(
+    initialValue: widget.initialValue,
+    autovalidateMode: widget.autovalidateMode,
+    builder: (FormFieldState<T> field) => InkWell(
+      onTap: isEnabled ? _onTap(field) : null,
+      child: InputDecorator(
+        textAlign: widget.textAlign,
+        decoration: widget.decoration,
+        child: DefaultTextStyle(
+          style: _buildTextStyle(field.value, context.theme),
           textAlign: widget.textAlign,
-          decoration: widget.decoration,
-          child: DefaultTextStyle(
-            style: _buildTextStyle(field.value, context.theme),
-            child: widget.child ?? Text(_buildTextContent(field.value)),
-            textAlign: widget.textAlign,
-          ),
+          child: widget.child ?? Text(_buildTextContent(field.value) ?? '<empty'),
         ),
       ),
-      validator: widget.validator,
-      onSaved: widget.onSaved,
-    );
-  }
+    ),
+    validator: widget.validator,
+    onSaved: widget.onSaved,
+  );
 
-  VoidCallback _onTap(FormFieldState<T> field) {
-    return () {
-      closeKeyboard();
-      widget.onTap(field);
-    };
-  }
+  VoidCallback _onTap(FormFieldState<T> field) => () {
+    closeKeyboard();
+    widget.onTap?.call(field);
+  };
 
-  TextStyle _buildTextStyle(T value, ThemeProvider theme) {
+  TextStyle _buildTextStyle(T? value, ThemeProvider theme) {
     if (!isEnabled) {
       return theme.textfieldLabel.copyWith(height: 1.5);
     }
@@ -74,12 +70,12 @@ class FakeTextFormFieldState<T> extends State<FakeTextFormField<T>> with Dismiss
     return theme.textfieldLabel.copyWith(height: 1.5);
   }
 
-  String _buildTextContent(T value) {
+  String? _buildTextContent(T? value) {
     if (value == null) {
       return widget.decoration.hintText;
     }
     if (value is List) {
-      return value.isNotEmpty ? "Successfully Added!" : widget.decoration.hintText;
+      return value.isNotEmpty ? 'Successfully Added!' : widget.decoration.hintText;
     }
     if (value is String) {
       return value.isNotEmpty ? value.toString() : widget.decoration.hintText;

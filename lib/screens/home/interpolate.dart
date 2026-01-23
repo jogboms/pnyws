@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 // https://math.stackexchange.com/questions/377169/going-from-a-value-inside-1-1-to-a-value-in-another-range/377174#377174
 double interpolate({
-  double input,
+  required double input,
   double inputMin = 0,
   double inputMax = 1,
   double outputMin = 0,

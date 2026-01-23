@@ -3,20 +3,18 @@ import 'dart:async';
 import 'package:pnyws/data/data.dart';
 import 'package:rxdart/rxdart.dart';
 
-import './trip_repository.dart';
-
 class TripMockImpl extends TripRepository {
-  TripMockImpl({List<TripData> trips}) {
-    _tripsController.add(trips ?? []);
+  TripMockImpl({required List<TripData> trips}) {
+    _tripsController.add(trips);
 
     _activeTripController.add(trips.last);
   }
 
-  final _activeTripController = BehaviorSubject<TripData>();
+  final _activeTripController = BehaviorSubject<TripData?>();
   final _tripsController = BehaviorSubject<List<TripData>>();
 
   @override
-  Stream<TripData> getActiveTrip() => _activeTripController.stream;
+  Stream<TripData?> getActiveTrip() => _activeTripController.stream;
 
   @override
   Stream<List<TripData>> getAllTrips() => _tripsController.stream;
@@ -42,7 +40,7 @@ class TripMockImpl extends TripRepository {
   @override
   void removeExpenseFromTrip(TripData trip, ExpenseData expense) {
     final newTrip = trip.copyWith(
-      items: trip.items.where((_expense) => _expense.uuid != expense.uuid).toList(),
+      items: trip.items.where((expense) => expense.uuid != expense.uuid).toList(),
     );
     _tripsController.add(modifyTripFromList(_tripsController.value, newTrip));
     _activeTripController.add(newTrip);
@@ -52,15 +50,12 @@ class TripMockImpl extends TripRepository {
   void removeTrip(TripData trip) {
     _tripsController.add(removeTripFromList(_tripsController.value, trip));
     if (_activeTripController.value == trip) {
-      setActiveTrip(null);
+      _activeTripController.add(null);
     }
   }
 
-  List<TripData> modifyTripFromList(List<TripData> trips, TripData trip) {
-    return [...removeTripFromList(trips, trip), trip];
-  }
+  List<TripData> modifyTripFromList(List<TripData> trips, TripData trip) => [...removeTripFromList(trips, trip), trip];
 
-  List<TripData> removeTripFromList(List<TripData> trips, TripData trip) {
-    return trips.where((_trip) => _trip.uuid != trip.uuid).toList();
-  }
+  List<TripData> removeTripFromList(List<TripData> trips, TripData trip) =>
+      trips.where((trip) => trip.uuid != trip.uuid).toList();
 }

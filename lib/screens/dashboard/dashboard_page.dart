@@ -5,98 +5,89 @@ import 'package:pnyws/data/data.dart';
 import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/dashboard/create_trip_modal.dart';
 import 'package:pnyws/screens/dashboard/trip_list_item.dart';
-import 'package:pnyws/utils/utils.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({Key key, this.selectedTrip}) : super(key: key);
+  const DashboardPage({super.key, this.selectedTrip});
 
-  final TripData selectedTrip;
+  final TripData? selectedTrip;
 
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  Stream<Pair<List<TripData>, TripData>> stream;
+  late final Stream<(List<TripData>, TripData?)> _stream;
 
   @override
   void initState() {
     super.initState();
 
-    stream = Registry.di().repository.trip.getAllTripsWithSelected();
+    _stream = Registry.di().repository.trip.getAllTripsWithSelected();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        heroTag: kHeroTag,
-        child: Icon(Icons.add),
-        onPressed: () async {
-          final value = await showGeneralDialog<TripData>(
-            context: context,
-            transitionDuration: Duration(milliseconds: 350),
-            barrierLabel: "details",
-            barrierColor: MkColors.primaryAccent.withOpacity(.75),
-            barrierDismissible: true,
-            pageBuilder: (_a, _b, _c) => CreateTripModal(),
-          );
+  Widget build(BuildContext context) => Scaffold(
+    floatingActionButton: FloatingActionButton(
+      heroTag: kHeroTag,
+      child: const Icon(Icons.add),
+      onPressed: () async {
+        final value = await showGeneralDialog<TripData>(
+          context: context,
+          transitionDuration: const Duration(milliseconds: 350),
+          barrierLabel: 'details',
+          barrierColor: MkColors.primaryAccent.withValues(alpha: .75),
+          barrierDismissible: true,
+          pageBuilder: (a, b, c) => const CreateTripModal(),
+        );
 
-          if (value != null) {
-            Registry.di().repository.trip.addNewTrip(value);
+        if (value != null) {
+          Registry.di().repository.trip.addNewTrip(value);
+          if (context.mounted) {
             Navigator.pop(context);
           }
-        },
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            floating: true,
-            centerTitle: true,
-            automaticallyImplyLeading: false,
-            title: Text("Trips", style: ThemeProvider.of(context).appBarTitle),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.close, color: kTextBaseColor),
-                onPressed: () => Navigator.pop(context),
+        }
+      },
+    ),
+    body: CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          floating: true,
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          title: Text('Trips', style: ThemeProvider.of(context).appBarTitle),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.close, color: kTextBaseColor),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+        StreamBuilder(
+          stream: _stream,
+          builder: (context, snapshot) {
+            final data = snapshot.data;
+            if (snapshot.connectionState == .waiting || data == null) {
+              return const SliverFillRemaining(child: Center(child: Text('Hang on...')));
+            }
+
+            final (values, selectedTrip) = data;
+            if (values.isEmpty) {
+              return const SliverFillRemaining(child: Center(child: Text('Create a Trip.')));
+            }
+
+            return SliverPadding(
+              padding: const .only(bottom: 84),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((_, index) {
+                  final item = values[values.length - 1 - index];
+                  return TripListItem(item: item, isActive: selectedTrip == item);
+                }, childCount: values.length),
               ),
-            ],
-          ),
-          StreamBuilder<Pair<List<TripData>, TripData>>(
-            stream: stream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
-                return SliverFillRemaining(
-                  child: Center(child: Text("Hang on...")),
-                );
-              }
-
-              if (snapshot.hasData && (snapshot.data == null || snapshot.data.first.isEmpty)) {
-                return SliverFillRemaining(
-                  child: Center(child: Text("Create a Trip.")),
-                );
-              }
-
-              final values = snapshot.data.first;
-              final selectedTrip = snapshot.data.second;
-
-              return SliverPadding(
-                padding: EdgeInsets.only(bottom: 84),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (_, index) {
-                      final item = values[values.length - 1 - index];
-                      return TripListItem(item: item, isActive: selectedTrip == item);
-                    },
-                    childCount: values.length,
-                  ),
-                ),
-              );
-            },
-          )
-        ],
-      ),
-    );
-  }
+            );
+          },
+        ),
+      ],
+    ),
+  );
 }

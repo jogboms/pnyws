@@ -1,7 +1,7 @@
 import 'package:pnyws/environments/environment.dart';
 import 'package:pnyws/services/shared_prefs.dart';
 
-const _isFirstTimeLogin = "IS_FIRST_TIME_LOGIN";
+const _isFirstTimeLogin = 'IS_FIRST_TIME_LOGIN';
 
 class MkFirstTimeLoginCheck {
   static bool check(SharedPrefs sharedPrefs, Environment env) {
@@ -10,6 +10,7 @@ class MkFirstTimeLoginCheck {
     }
     final state = sharedPrefs.getBool(_isFirstTimeLogin);
     if (state != false) {
+      sharedPrefs.setBool(_isFirstTimeLogin, value: false);
       return true;
     }
     return false;

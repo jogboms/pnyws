@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+import 'package:collection/collection.dart' hide groupBy;
 import 'package:memoize/memoize.dart';
 import 'package:pnyws/data/data.dart';
 import 'package:pnyws/services/shared_prefs.dart';
@@ -9,37 +9,28 @@ import 'package:pnyws/state/state_machine.dart';
 import 'package:pnyws/utils/utils.dart';
 import 'package:rxdart/rxdart.dart';
 
-import './trip_repository.dart';
-
-const ACTIVE_ITEM_KEY = "ACTIVE_ITEM_KEY";
+const _activeItemKey = 'ACTIVE_ITEM_KEY';
 
 class TripImpl extends TripRepository {
   TripImpl({
-    @required this.firebase,
-    @required this.stateMachine,
-    @required this.pref,
+    required this.firebase,
+    required this.stateMachine,
+    required this.pref,
   }) {
-    account.switchMap((_account) {
-      return CombineLatestStream<QuerySnapshot, List<TripData>>(
-        [
-          firebase.db.trips.fetchAll(_account.uuid).snapshots().distinct(),
-          firebase.db.expenses.fetchAll(_account.uuid).snapshots().distinct(),
-        ],
-        (values) => memoizedTripsFn(
-          values[0].docs,
-          memoizedExpensesFn(values[1].docs),
-        )..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
-      ).distinct();
-    }).listen((trips) {
-      _tripsController.add(trips);
-
-      if (_activeTripController.value == null) {
-        final activeItemId = retrievePersistedUuid();
-        _activeTripController.add(
-          activeItemId.isNotEmpty ? activeItemId : (trips.isNotEmpty ? trips.last.uuid : null),
-        );
-      }
-    });
+    account
+        .switchMap(
+          (account) => CombineLatestStream<QuerySnapshot, List<TripData>>(
+            [
+              firebase.db.trips.fetchAll(account.uuid).snapshots().distinct(),
+              firebase.db.expenses.fetchAll(account.uuid).snapshots().distinct(),
+            ],
+            (values) => _memoizedTripsFn(
+              values[0].docs,
+              _memoizedExpensesFn(values[1].docs),
+            )..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
+          ).distinct(),
+        )
+        .listen(_tripsController.add);
   }
 
   final Firebase firebase;
@@ -49,98 +40,87 @@ class TripImpl extends TripRepository {
   final _activeTripController = BehaviorSubject<String>();
   final _tripsController = BehaviorSubject<List<TripData>>();
 
-  Stream<AccountData> get account =>
-      stateMachine.stream.where((state) => state.account != null).map((state) => state.account);
+  Stream<AccountData> get account => stateMachine.stream.map((state) => state.account).whereNotNull();
 
   @override
-  Stream<TripData> getActiveTrip() {
-    return CombineLatestStream.combine2<String, List<TripData>, TripData>(
-      _activeTripController.stream.where((id) => id != null),
-      getAllTrips(),
-      (id, list) => list.firstWhere((item) => item.uuid == id),
-    ).asBroadcastStream();
-  }
+  Stream<TripData?> getActiveTrip() => CombineLatestStream.combine2(
+    _activeTripController.stream.startWith(_retrievePersistedUuid()),
+    getAllTrips(),
+    (id, list) => list.firstWhereOrNull((item) => item.uuid == id),
+  ).asBroadcastStream();
 
   @override
   Stream<List<TripData>> getAllTrips() => _tripsController.stream;
 
   @override
   void setActiveTrip(TripData trip) {
-    persistActiveUuid(trip?.uuid);
-    _activeTripController.add(trip?.uuid);
+    _persistActiveUuid(trip.uuid);
+    _activeTripController.add(trip.uuid);
   }
 
   @override
   void addNewTrip(TripData trip) {
-    StreamSubscription<AccountData> sub;
-    sub = account.listen((_account) async {
-      final data = trip.toMap()..addAll(<String, String>{"accountID": _account.uuid});
+    StreamSubscription<AccountData>? sub;
+    sub = account.listen((account) async {
+      final data = trip.toMap()..addAll(<String, String>{'accountID': account.uuid});
 
       await firebase.db.trips.fetchOne(trip.uuid).set(data);
       setActiveTrip(trip);
-      await sub.cancel();
+      await sub?.cancel();
     });
   }
 
   @override
   void addExpenseToTrip(TripData trip, ExpenseData expense) {
-    StreamSubscription<AccountData> sub;
-    sub = account.listen((_account) async {
-      final data = expense.toMap()..addAll(<String, String>{"tripID": trip.uuid, "accountID": _account.uuid});
+    StreamSubscription<AccountData>? sub;
+    sub = account.listen((account) async {
+      final data = expense.toMap()..addAll(<String, String>{'tripID': trip.uuid, 'accountID': account.uuid});
       await firebase.db.expenses.fetchOne(expense.uuid).set(data);
-      await sub.cancel();
+      await sub?.cancel();
     });
   }
 
   @override
   void removeExpenseFromTrip(TripData trip, ExpenseData expense) {
-    StreamSubscription<AccountData> sub;
-    sub = account.listen((_account) async {
+    StreamSubscription<AccountData>? sub;
+    sub = account.listen((account) async {
       await firebase.db.expenses.fetchOne(expense.uuid).delete();
-      await sub.cancel();
+      await sub?.cancel();
     });
   }
 
   @override
   void removeTrip(TripData trip) {
-    StreamSubscription<AccountData> sub;
-    sub = account.listen((_account) async {
+    StreamSubscription<AccountData>? sub;
+    sub = account.listen((account) async {
       await firebase.db.trips.fetchOne(trip.uuid).delete();
       final snapshot = await firebase.db.expenses.fetchByTrip(trip.uuid).get();
 
-      for (DocumentSnapshot ds in snapshot.docs) {
+      for (final DocumentSnapshot ds in snapshot.docs) {
         await ds.reference.delete();
       }
-      await sub.cancel();
+      await sub?.cancel();
     });
+    _resetPersistedUuid();
   }
 
-  void persistActiveUuid(String uuid) {
-    if (uuid == null) {
-      resetPersistedUuid();
-    } else {
-      pref.setString(ACTIVE_ITEM_KEY, uuid);
-    }
-  }
+  void _persistActiveUuid(String uuid) => pref.setString(_activeItemKey, uuid);
 
-  String retrievePersistedUuid() {
-    return pref.getString(ACTIVE_ITEM_KEY) ?? "";
-  }
+  String _retrievePersistedUuid() => pref.getString(_activeItemKey);
 
-  void resetPersistedUuid() {
-    pref.remove(ACTIVE_ITEM_KEY);
-  }
+  void _resetPersistedUuid() => pref.remove(_activeItemKey);
 }
 
-final memoizedExpensesFn = memo1<List<DocumentSnapshot>, Map<String, List<ExpenseData>>>(
+final _memoizedExpensesFn = memo1<List<DocumentSnapshot>, Map<String, List<ExpenseData>>>(
   (documents) => groupBy<DocumentSnapshot, ExpenseData>(
     documents,
-    (item) => item.get("tripID"),
+    (item) => item.get('tripID') as String,
     (item) => ExpenseData.fromMap(FireSnapshot(item).data),
   ),
 );
 
-final memoizedTripsFn = memo2<List<DocumentSnapshot>, Map<String, List<ExpenseData>>, List<TripData>>(
-  (documents, expensesMap) => documents.map((item) => TripData.fromMap(FireSnapshot(item).data, expensesMap)).toList()
-    ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
+final _memoizedTripsFn = memo2<List<DocumentSnapshot>, Map<String, List<ExpenseData>>, List<TripData>>(
+  (documents, expensesMap) =>
+      documents.map((item) => TripData.fromMap(FireSnapshot(item).data, expensesMap)).toList()
+        ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
 );

@@ -4,12 +4,14 @@ import 'package:pnyws/registry.dart';
 import 'package:pnyws/widgets/theme_provider.dart';
 
 class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
+
   @override
-  _SplashPageState createState() => _SplashPageState();
+  State<SplashPage> createState() => _SplashPageState();
 }
 
 class _SplashPageState extends State<SplashPage> {
-  Stream<String> _stream;
+  late final Stream<String> _stream;
 
   @override
   void initState() {
@@ -19,26 +21,22 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamBuilder<String>(
-        stream: _stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            WidgetsBinding.instance.addPostFrameCallback(
-              (_) async => Registry.di().sharedCoordinator.toHome(),
-            );
-          }
+  Widget build(BuildContext context) => Scaffold(
+    body: StreamBuilder(
+      stream: _stream,
+      builder: (_, snapshot) {
+        if (snapshot.hasData) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async => Registry.di().sharedCoordinator.toHome());
+        }
 
-          return _Content(isColdStart: true);
-        },
-      ),
-    );
-  }
+        return const _Content(isColdStart: true);
+      },
+    ),
+  );
 }
 
 class _Content extends StatefulWidget {
-  const _Content({Key key, @required this.isColdStart}) : super(key: key);
+  const _Content({required this.isColdStart});
 
   final bool isColdStart;
 
@@ -47,67 +45,67 @@ class _Content extends StatefulWidget {
 }
 
 class _ContentState extends State<_Content> {
-  bool isLoading;
+  var _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    isLoading = widget.isColdStart;
+    _isLoading = widget.isColdStart;
     if (widget.isColdStart) {
       _onLogin();
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          top: null,
-          bottom: 124.0,
-          child: Builder(builder: (_) {
-            if (isLoading) {
+  Widget build(BuildContext context) => Stack(
+    children: [
+      Positioned.fill(
+        top: null,
+        bottom: 124.0,
+        child: Builder(
+          builder: (_) {
+            if (_isLoading) {
               return const Center(child: CircularProgressIndicator());
             }
 
             return Center(
-              child: RaisedButton(
-                color: Colors.white,
-                child: Text("Continue with Google", style: ThemeProvider.of(context).bodyBold),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
                 onPressed: _onLogin,
+                child: Text('Continue with Google', style: ThemeProvider.of(context).bodyBold),
               ),
             );
-          }),
-        )
-      ],
-    );
-  }
+          },
+        ),
+      ),
+    ],
+  );
 
   void _onLogin() async {
     try {
-      setState(() => isLoading = true);
-      // TODO: move this out of here
+      setState(() => _isLoading = true);
+      // TODO(jogboms): move this out of here
       await Registry.di().repository.auth.signIn();
     } catch (e) {
-      // TODO: move this out of here
+      // TODO(jogboms): move this out of here
       final message = MkStrings.genericError(e);
 
       if (message.isNotEmpty) {
         print(message);
-//        SnackBarProvider.of(context).show(message, duration: const Duration(milliseconds: 3500));
+        //        SnackBarProvider.of(context).show(message, duration: const Duration(milliseconds: 3500));
       }
 
-      // TODO: move this out of here
+      // TODO(jogboms): move this out of here
       await Registry.di().repository.auth.signOut();
 
       if (!mounted) {
         return;
       }
 
-      setState(() => isLoading = false);
+      setState(() => _isLoading = false);
 
-      print(e.toString());
-//      SnackBarProvider.of(context).show(e.toString());
+      print(e);
+      //      SnackBarProvider.of(context).show(e.toString());
     }
   }
 }

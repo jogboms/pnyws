@@ -1,11 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:pnyws/data/data.dart';
-import 'package:pnyws/state/state_machine.dart';
-
-import './auth_repository.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AuthImpl extends AuthRepository {
-  AuthImpl({@required this.firebase, @required StateMachine stateMachine}) : super(stateMachine: stateMachine);
+  AuthImpl({required this.firebase, required super.stateMachine});
 
   final Firebase firebase;
 
@@ -13,7 +10,8 @@ class AuthImpl extends AuthRepository {
   Future<void> signIn() => firebase.auth.signInWithGoogle();
 
   @override
-  Stream<String> get onAuthStateChangedInternal => firebase.auth.onAuthStateChanged.map((convert) => convert.uuid);
+  Stream<String> get onAuthStateChangedInternal =>
+      firebase.auth.onAuthStateChanged.map((convert) => convert.uuid).whereNotNull();
 
   @override
   Future<void> signOut() => firebase.auth.signOutWithGoogle();
@@ -24,10 +22,8 @@ class AuthImpl extends AuthRepository {
   }
 
   @override
-  Stream<AccountData> getAccount(String uuid) {
-    return firebase.db.accounts.fetchOne(uuid).snapshots().map((snapshot) {
-      final json = FireSnapshot(snapshot).data;
-      return AccountData(uuid: json["uuid"]);
-    });
-  }
+  Stream<AccountData> getAccount(String uuid) => firebase.db.accounts.fetchOne(uuid).snapshots().map((snapshot) {
+    final json = FireSnapshot(snapshot).data;
+    return AccountData(uuid: json['uuid']! as String);
+  });
 }

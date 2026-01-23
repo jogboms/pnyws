@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 class MkColors {
   static const _basePrimary = 0xFF121212;
   static const _baseSecondary = 0xFF03dac4;
-  static const MaterialColor white = MaterialColor(
+  static const white = MaterialColor(
     0xFFFFFFFF,
     <int, Color>{
       50: Color(0xFFFFFFFF),
@@ -19,7 +19,7 @@ class MkColors {
       900: Color(0xFF3c3c3c),
     },
   );
-  static const MaterialColor primaryAccent = MaterialColor(
+  static const primaryAccent = MaterialColor(
     _basePrimary,
     <int, Color>{
       50: Color(0xFFf7f7f7),
@@ -34,7 +34,7 @@ class MkColors {
       900: Color(_basePrimary),
     },
   );
-  static const MaterialColor secondaryAccent = MaterialColor(
+  static const secondaryAccent = MaterialColor(
     _baseSecondary,
     <int, Color>{
       50: Color(0xFFd4f6f2),
@@ -49,11 +49,11 @@ class MkColors {
       900: Color(0xFF005b39),
     },
   );
-  static const Color primary = Color(_basePrimary);
-  static const Color secondary = Color(_baseSecondary);
-  static const Color light_grey = Color(0xFF9B9B9B);
-  static const Color success = Color(0xFF7ED321);
-  static const Color danger = Color(0xFFEB5757);
-  static const Color info = Color(0xFF2D9CDB);
-  static const Color warning = Color(0xFFF1B61E);
+  static const primary = Color(_basePrimary);
+  static const secondary = Color(_baseSecondary);
+  static const lightGrey = Color(0xFF9B9B9B);
+  static const success = Color(0xFF7ED321);
+  static const danger = Color(0xFFEB5757);
+  static const info = Color(0xFF2D9CDB);
+  static const warning = Color(0xFFF1B61E);
 }

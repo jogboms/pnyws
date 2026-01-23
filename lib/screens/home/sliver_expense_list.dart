@@ -4,19 +4,14 @@ import 'package:pnyws/registry.dart';
 import 'package:pnyws/screens/home/expense_list_item.dart';
 
 class SliverExpenseList extends StatelessWidget {
-  const SliverExpenseList({
-    Key key,
-    @required this.trip,
-  }) : super(key: key);
+  const SliverExpenseList({super.key, required this.trip});
 
   final TripData trip;
 
   @override
   Widget build(BuildContext context) {
     if (trip.items.isEmpty) {
-      return SliverFillRemaining(
-        child: Center(child: Text("No Expenses Added.")),
-      );
+      return const SliverFillRemaining(child: Center(child: Text('No Expenses Added.')));
     }
 
     return SliverList(

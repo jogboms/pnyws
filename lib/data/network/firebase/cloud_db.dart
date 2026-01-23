@@ -2,19 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CloudDb {
   CloudDb(this._instance)
-      : expenses = _ExpensesStore(_instance),
-        trips = _Store(_instance, "trips"),
-        accounts = _Store(_instance, "accounts");
+    : expenses = ExpensesStore(_instance),
+      trips = Store(_instance, 'trips'),
+      accounts = Store(_instance, 'accounts');
 
   final FirebaseFirestore _instance;
-  final _ExpensesStore expenses;
-  final _Store trips;
-  final _Store accounts;
+  final ExpensesStore expenses;
+  final Store trips;
+  final Store accounts;
 
   DocumentReference get settings => _instance.doc('settings/common');
 
   Future<void> batchAction(void Function(WriteBatch batch) action) {
-    final WriteBatch batch = _instance.batch();
+    final batch = _instance.batch();
 
     action(batch);
 
@@ -22,8 +22,8 @@ class CloudDb {
   }
 }
 
-class _Store {
-  _Store(this.store, this.path);
+class Store {
+  Store(this.store, this.path);
 
   final FirebaseFirestore store;
   final String path;
@@ -33,8 +33,8 @@ class _Store {
   DocumentReference fetchOne(String uuid) => store.doc('$path/$uuid');
 }
 
-class _ExpensesStore extends _Store {
-  _ExpensesStore(FirebaseFirestore store) : super(store, "expenses");
+class ExpensesStore extends Store {
+  ExpensesStore(FirebaseFirestore store) : super(store, 'expenses');
 
   Query fetchByTrip(String tripId) => store.collection(path).where('tripID', isEqualTo: tripId);
 }

@@ -1,1 +1,1 @@
-export "./primitives/primitives.dart";
+export './primitives/primitives.dart';

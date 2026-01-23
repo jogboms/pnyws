@@ -6,7 +6,7 @@ typedef Reducer = AppState Function(AppState state);
 class StateMachine {
   StateMachine({
     this.initialState = const AppState(),
-  }) : _controller = BehaviorSubject<AppState>.seeded(initialState);
+  }) : _controller = .seeded(initialState);
 
   final BehaviorSubject<AppState> _controller;
   final AppState initialState;

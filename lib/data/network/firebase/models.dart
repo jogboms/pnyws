@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'data_reference.dart';
+import 'package:pnyws/data/network/firebase/data_reference.dart';
 
 class FireSnapshot {
   FireSnapshot(DocumentSnapshot doc)
-      : data = doc.data(),
-        reference = FireReference(doc.reference);
+    : data = doc.data()! as Map<String, Object?>,
+      reference = FireReference(doc.reference);
 
-  final Map<String, dynamic> data;
+  final Map<String, Object?> data;
 
   final FireReference reference;
 }
@@ -16,9 +16,9 @@ class FireSnapshot {
 class FireUser {
   FireUser(this._reference);
 
-  final FirebaseUser _reference;
+  final User? _reference;
 
-  String get uuid => _reference?.uid;
+  String? get uuid => _reference?.uid;
 }
 
 class FireReference implements DataReference<DocumentReference> {

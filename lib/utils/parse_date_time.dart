@@ -1,7 +1,7 @@
-DateTime parseDateTime(String serialized) {
+DateTime? parseDateTime(String serialized) {
   try {
-    return DateTime.tryParse(serialized);
+    return .tryParse(serialized);
   } catch (e) {
-    return DateTime.now();
+    return .now();
   }
 }

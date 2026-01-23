@@ -1,81 +1,58 @@
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
+import 'package:pnyws/data/entities/primitives/expense_data.dart';
 import 'package:pnyws/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
-import 'expense_data.dart';
-
-class TripData {
+class TripData with EquatableMixin {
   TripData({
-    String uuid,
-    @required this.title,
+    String? uuid,
+    required this.title,
     this.accountID,
-    this.description = "",
+    this.description = '',
     this.items = const [],
-    DateTime createdAt,
-  })  : uuid = uuid ?? Uuid().v4(),
-        createdAt = createdAt ?? DateTime.now();
+    DateTime? createdAt,
+  }) : uuid = uuid ?? const Uuid().v4(),
+       createdAt = createdAt ?? DateTime.now();
 
-  factory TripData.fromMap(Map<String, dynamic> map, Map<String, List<ExpenseData>> expenses) {
-    return TripData(
-      uuid: map["uuid"],
-      title: map["title"],
-      description: map["description"],
-      accountID: map["accountID"],
-      createdAt: parseDateTime(map["createdAt"]),
-      items: (expenses[map["uuid"]] ?? [])..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
-    );
-  }
+  factory TripData.fromMap(Map<String, Object?> map, Map<String, List<ExpenseData>> expenses) => TripData(
+    uuid: map['uuid']! as String,
+    title: map['title']! as String,
+    description: map['description']! as String,
+    accountID: map['accountID'] as String?,
+    createdAt: parseDateTime(map['createdAt']! as String),
+    items: (expenses[map['uuid']] ?? [])..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
+  );
 
   final String uuid;
   final String title;
   final String description;
-  final String accountID;
+  final String? accountID;
   final List<ExpenseData> items;
   final DateTime createdAt;
 
-  @override
-  int get hashCode =>
-      uuid.hashCode ^ title.hashCode ^ description.hashCode ^ accountID.hashCode ^ items.hashCode ^ createdAt.hashCode;
+  bool get isValid => title.isNotEmpty;
 
   @override
-  bool operator ==(Object other) =>
-      other is TripData &&
-      other.uuid == uuid &&
-      other.title == title &&
-      other.description == description &&
-      other.accountID == accountID &&
-      other.items == items &&
-      other.createdAt.compareTo(createdAt) == 0;
-
-  bool get isValid => title != null && title.isNotEmpty;
+  List<Object?> get props => [uuid, title, description, accountID, items, createdAt];
 
   TripData copyWith({
-    String title,
-    String description,
-    List<ExpenseData> items,
-  }) {
-    return TripData(
-      uuid: uuid,
-      createdAt: createdAt,
-      accountID: accountID,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      items: items ?? this.items,
-    );
-  }
+    String? title,
+    String? description,
+    List<ExpenseData>? items,
+  }) => TripData(
+    uuid: uuid,
+    createdAt: createdAt,
+    accountID: accountID,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    items: items ?? this.items,
+  );
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      "uuid": uuid,
-      "title": title,
-      "accountID": accountID,
-      "description": description,
-      "createdAt": createdAt.toString(),
-    };
-  }
-
-  @override
-  String toString() {
-    return "{uuid: $uuid, title: $title, description: $description, accountID: $accountID items: $items, createdAt: $createdAt}";
-  }
+  Map<String, Object?> toMap() => {
+    'uuid': uuid,
+    'title': title,
+    'accountID': accountID,
+    'description': description,
+    'createdAt': createdAt.toString(),
+  };
 }

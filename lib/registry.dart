@@ -15,14 +15,13 @@ class Registry {
     String version,
     SharedPrefs sharedPrefs,
   ) {
-    assert(session != null && navigatorKey != null);
     Injector.appInstance
-      ..registerSingleton<Registry>((_) => this)
-      ..registerSingleton<Repository>((_) => repository)
-      ..registerSingleton<Session>((_) => session)
-      ..registerSingleton<SharedPrefs>((_) => sharedPrefs)
-      ..registerSingleton<_AppVersion>((_) => _AppVersion(version))
-      ..registerSingleton<SharedCoordinator>((_) => SharedCoordinator(navigatorKey));
+      ..registerSingleton<Registry>(() => this)
+      ..registerSingleton<Repository>(() => repository)
+      ..registerSingleton<Session>(() => session)
+      ..registerSingleton<SharedPrefs>(() => sharedPrefs)
+      ..registerSingleton<_AppVersion>(() => _AppVersion(version))
+      ..registerSingleton<SharedCoordinator>(() => SharedCoordinator(navigatorKey));
   }
 
   @visibleForTesting
@@ -30,17 +29,17 @@ class Registry {
     Injector.appInstance.clearAll();
   }
 
-  static Registry di() => Injector.appInstance.getDependency<Registry>();
+  static Registry di() => Injector.appInstance.get<Registry>();
 
-  Repository get repository => Injector.appInstance.getDependency<Repository>();
+  Repository get repository => Injector.appInstance.get<Repository>();
 
-  Session get session => Injector.appInstance.getDependency<Session>();
+  Session get session => Injector.appInstance.get<Session>();
 
-  String get version => Injector.appInstance.getDependency<_AppVersion>().version;
+  String get version => Injector.appInstance.get<_AppVersion>().version;
 
-  SharedPrefs get sharedPref => Injector.appInstance.getDependency<SharedPrefs>();
+  SharedPrefs get sharedPref => Injector.appInstance.get<SharedPrefs>();
 
-  SharedCoordinator get sharedCoordinator => Injector.appInstance.getDependency<SharedCoordinator>();
+  SharedCoordinator get sharedCoordinator => Injector.appInstance.get<SharedCoordinator>();
 }
 
 class _AppVersion {
