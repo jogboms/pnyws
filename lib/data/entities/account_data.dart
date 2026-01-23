@@ -8,5 +8,9 @@ class AccountData with EquatableMixin {
   @override
   List<Object?> get props => [uuid];
 
-  Map<String, String> toMap() => {'uuid': uuid};
+  Map<String, String> toMap() => {AccountDataKeys.id: uuid};
+}
+
+final class AccountDataKeys {
+  static const id = 'uuid';
 }

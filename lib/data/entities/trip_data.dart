@@ -56,3 +56,8 @@ class TripData with EquatableMixin {
     'createdAt': createdAt.toString(),
   };
 }
+
+final class TripDataKeys {
+  static const tripId = 'tripID';
+  static const accountId = 'accountID';
+}

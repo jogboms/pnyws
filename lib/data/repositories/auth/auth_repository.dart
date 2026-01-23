@@ -18,8 +18,4 @@ abstract class AuthRepository {
   Stream<String> get onAuthStateChangedInternal;
 
   Future<void> signOut();
-
-  Future<void> signUp(AccountData account);
-
-  Stream<AccountData> getAccount(String uuid);
 }

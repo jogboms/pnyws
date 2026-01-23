@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pnyws/data/entities/exceptions.dart';
-import 'package:pnyws/data/firebase/models.dart';
 
 class Auth {
   Auth(this._auth, this._googleSignIn);
@@ -12,28 +11,23 @@ class Auth {
   final FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
 
-  FireUser get getUser => FireUser(_auth.currentUser);
-
-  Stream<FireUser> get onAuthStateChanged => _auth.authStateChanges().map(FireUser.new);
+  Stream<String?> get onAuthStateChanged => _auth.authStateChanges().map((user) => user?.uid);
 
   Future<void> signInWithGoogle() async {
     try {
-      var currentUser = _googleSignIn.currentUser;
-      currentUser ??= await _googleSignIn.signInSilently();
-      currentUser ??= await _googleSignIn.signIn();
+      var account = await _googleSignIn.attemptLightweightAuthentication();
+      account ??= await _googleSignIn.authenticate();
 
-      final auth = await currentUser?.authentication;
-      if (auth == null) {
-        throw Exception('Authentication failed. Please try again.');
-      }
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: auth.accessToken,
-        idToken: auth.idToken,
+      final (idToken, accessToken) = (
+        account.authentication.idToken,
+        (await account.authorizationClient.authorizeScopes([])).accessToken,
       );
-      await _auth.signInWithCredential(credential);
+
+      await _auth.signInWithCredential(
+        GoogleAuthProvider.credential(accessToken: accessToken, idToken: idToken),
+      );
     } on PlatformException catch (e) {
-      if (e.code == GoogleSignIn.kSignInCanceledError) {
+      if (e case GoogleSignInException(code: .canceled)) {
         return;
       }
       if (e.message?.contains('administrator') ?? false) {
@@ -43,8 +37,6 @@ class Auth {
         throw NoInternetException();
       }
       throw Exception('Sorry, We could not connect. Try again.');
-    } catch (e) {
-      rethrow;
     }
   }
 

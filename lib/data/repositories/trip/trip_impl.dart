@@ -20,14 +20,12 @@ class TripImpl extends TripRepository {
     _account = stateMachine.stream.map((state) => state.account).whereNotNull().shareValue();
     _account
         .switchMap(
-          (account) => CombineLatestStream(
-            [
-              firebase.db.trips.fetchAll(account.uuid).snapshots().distinct(),
-              firebase.db.expenses.fetchAll(account.uuid).snapshots().distinct(),
-            ],
-            (values) => _memoizedTripsFn(
-              values[0].docs,
-              _memoizedExpensesFn(values[1].docs),
+          (account) => CombineLatestStream.combine2(
+            firebase.db.trips.fetchAll(account.uuid).snapshots().distinct(),
+            firebase.db.expenses.fetchAll(account.uuid).snapshots().distinct(),
+            (trips, expenses) => _memoizedTripsFn(
+              trips.docs,
+              _memoizedExpensesFn(expenses.docs),
             )..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
           ).distinct(),
         )
@@ -62,7 +60,7 @@ class TripImpl extends TripRepository {
   @override
   void addNewTrip(TripData trip) async {
     if (_account.valueOrNull case final account?) {
-      final data = trip.toMap()..addAll({_Keys.accountId: account.uuid});
+      final data = trip.toMap()..addAll({TripDataKeys.accountId: account.uuid});
       await firebase.db.trips.fetchOne(trip.uuid).set(data);
       setActiveTrip(trip);
     }
@@ -71,7 +69,7 @@ class TripImpl extends TripRepository {
   @override
   void addExpenseToTrip(TripData trip, ExpenseData expense) async {
     if (_account.valueOrNull case final account?) {
-      final data = expense.toMap()..addAll({_Keys.tripId: trip.uuid, _Keys.accountId: account.uuid});
+      final data = expense.toMap()..addAll({TripDataKeys.tripId: trip.uuid, TripDataKeys.accountId: account.uuid});
       await firebase.db.expenses.fetchOne(expense.uuid).set(data);
     }
   }
@@ -103,21 +101,16 @@ class TripImpl extends TripRepository {
   void _resetPersistedUuid() => pref.remove(_activeItemKey);
 }
 
-final class _Keys {
-  static const tripId = 'tripID';
-  static const accountId = 'accountID';
-}
-
 final _memoizedExpensesFn = memo1<List<DocumentSnapshot>, Map<String, List<ExpenseData>>>(
   (documents) => groupBy<DocumentSnapshot, ExpenseData>(
     documents,
-    (item) => item.get(_Keys.tripId) as String,
-    (item) => .fromMap(FireSnapshot(item).data),
+    (item) => item.get(TripDataKeys.tripId) as String,
+    (item) => .fromMap(FireSnapshot(item)),
   ),
 );
 
 final _memoizedTripsFn = memo2<List<DocumentSnapshot>, Map<String, List<ExpenseData>>, List<TripData>>(
   (documents, expensesMap) =>
-      documents.map((item) => TripData.fromMap(FireSnapshot(item).data, expensesMap)).toList()
+      documents.map((item) => TripData.fromMap(FireSnapshot(item), expensesMap)).toList()
         ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
 );

@@ -31,9 +31,6 @@ void main() {
       final completer = Completer<Map<String, int>>();
 
       final authRepository = MockAuthRepository();
-      when(() => authRepository.getAccount('1')).thenAnswer((_) async* {
-        await completer.future;
-      });
       when(() => authRepository.onAuthStateChanged).thenAnswer((_) async* {
         yield '1';
       });
